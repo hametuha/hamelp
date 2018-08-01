@@ -1,0 +1,17 @@
+{
+  "strict" : true,
+  "indent" : 2,
+  "unused" : false,
+  "undef" : true,
+  "browser" : true,
+  "devel" : false,
+  "debug"    : true,
+  "jquery": true,
+  "esversion": 6,
+  "globals": {
+    "google": false,
+    "ga": false,
+    "Vue": false,
+    "moment": false
+  }
+}

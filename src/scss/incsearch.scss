@@ -1,0 +1,15 @@
+.hamelp{
+	&-search-box{
+		position: relative;
+		margin: 2em 0;
+	}
+	&-result{
+		&-wrapper{
+			position: absolute;
+			z-index: 100;
+			width: 100%;
+			left: 0;
+			top: 100%;
+		}
+	}
+}
