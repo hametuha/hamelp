@@ -20,6 +20,13 @@ class PostType extends Singleton {
 	protected function init() {
 		add_action( 'init', [ $this, 'register_post_type' ] );
 		add_filter( 'template_include', [ $this, 'template_include' ] );
+		add_action( 'save_post', [ $this, 'save_post' ], 10, 2 );
+		add_action( 'add_meta_boxes', function( $post_type, $post ) {
+			if ( $this->is_supported( $post_type ) ) {
+				add_meta_box( 'faq_accessibility', __( 'Access', 'hamelp' ), [ $this, 'do_meta_box' ], $post_type, 'side' );
+			}
+		}, 10, 2 );
+		add_filter( 'the_content', [ $this, 'restrict_content' ], 20 );
 	}
 
 	/**
@@ -91,6 +98,17 @@ class PostType extends Singleton {
 	}
 
 	/**
+	 * Is post type supported.
+	 *
+	 * @param string $post_type
+	 * @return bool
+	 */
+	public function is_supported( $post_type ) {
+		$post_types = $this->get_post_types();
+		return array_key_exists( $post_type, $post_types );
+	}
+
+	/**
 	 * Override template if it's FAQ.
 	 *
 	 * @param string $template
@@ -140,5 +158,128 @@ class PostType extends Singleton {
 			}
 		}
 		return $found;
+	}
+
+	/**
+	 * @param int     $post_id
+	 * @param \WP_Post $post
+	 */
+	public function save_post( $post_id, $post ) {
+		if ( isset( $_POST['_hamela11ypnonce'] ) && wp_verify_nonce(  $_POST['_hamela11ypnonce'], 'hamlep_accessibility' ) ) {
+			update_post_meta( $post_id, '_accessibility', $_POST['hamelp_accessibility'] );
+		}
+	}
+
+	/**
+	 * @param int $post
+	 */
+	public function do_meta_box( $post ) {
+		wp_nonce_field( 'hamlep_accessibility', '_hamela11ypnonce', false );
+		$current_value = $this->get_accessibility( $post );
+		global $wp_roles;
+		?>
+		<p class="description">
+			<?php esc_html_e( 'You can limit access to this post.', 'hamelp' ) ?>
+		</p>
+		<?php foreach ( $this->get_accessibility_type() as $key => $value ) : ?>
+			<p>
+				<label>
+					<input type="radio" name="hamelp_accessibility" value="<?php echo esc_attr( $key ) ?>" <?php checked( $key, $current_value ) ?> />
+					<?php echo esc_html( $value['label'] ) ?>
+				</label>
+			</p>
+		<?php endforeach;
+	}
+
+	/**
+	 * Get accessibility types.
+	 *
+	 * @return array
+	 */
+	protected function get_accessibility_type() {
+		$types = [
+			'' => [
+				'label'    => __( 'Not restricted', 'hamelp' ),
+				'callback' => null,
+			],
+		];
+		global $wp_roles;
+		foreach ( [ 'subscriber', 'contributor', 'author', 'editor', 'administrator' ] as $role ) {
+			$types[ $role ] = [
+				'label'    => translate_user_role( $wp_roles->role_names[ $role ] ),
+				'callback' => null,
+			];
+		}
+		/**
+		 * hamelp_access_type
+		 *
+		 * Callback gets accessibility string and content.
+		 *
+		 * @param array $types 'accessibility' => ['label' => 'Accessible User', 'callback' => 'my_accessibility_callback' ]
+		 */
+		return apply_filters( 'hamelp_access_type', $types );
+	}
+
+	/**
+	 * Get accessibility.
+	 *
+	 * @param null|int|\WP_Post $post
+	 * @return string
+	 */
+	public function get_accessibility( $post = null ) {
+		$post = get_post( $post );
+		return (string) get_post_meta( $post->ID, '_accessibility', true );
+	}
+
+	/**
+	 * Return content.
+	 *
+	 * @param string $content
+	 * @return string
+	 */
+	public function restrict_content( $content ) {
+		if ( ! $this->is_supported( get_post_type() ) ) {
+			return $content;
+		}
+		$accessibility = $this->get_accessibility();
+		$can = true;
+		$accessibility_type = $this->get_accessibility_type();
+		switch ( $accessibility ) {
+			case 'administrator':
+			case 'editor':
+			case 'author':
+			case 'contributor':
+			case 'subscriber':
+				$can = current_user_can( $accessibility );
+				break;
+			default:
+				if ( isset( $accessibility_type[ $accessibility ] ) && is_callable( $accessibility_type[ $accessibility ]['callback'] ) ) {
+					$can = call_user_func_array( $accessibility_type[ $accessibility ]['callback'], [ $accessibility, $content ] );
+				}
+				break;
+		}
+		if ( $can ) {
+			return $content;
+		}
+		$obj = get_post_type_object( get_post_type() );
+		$login_url = wp_login_url( get_permalink() );
+		$message = wp_kses_post( sprintf(
+			__( 'This %1$s is restricted and accessible only for %2$s. If you are not logged in please <a href="%3$s" class="alert-link" rel="nofollow">log in</a>.', 'hamelp' ),
+			$obj->label,
+			$accessibility_type[ $accessibility ]['label'],
+			$login_url
+		) );
+		$message = sprintf( '<div class="hamelp-alert alert alert-warning">%s</div>', $message );
+		/**
+		 * hamelp_restricted_content
+		 *
+		 * Filter hook for restricted contents.
+		 *
+		 * @param string $message
+		 * @param string $accessibility
+		 * @return string
+		 */
+		$message = apply_filters( 'hamelp_restricted_content', $message, $accessibility );
+		return $message;
 	}
 }
