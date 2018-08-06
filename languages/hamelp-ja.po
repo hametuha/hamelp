@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Hamelp\n"
-"POT-Creation-Date: 2018-08-03 19:40+0900\n"
-"PO-Revision-Date: 2018-08-03 19:41+0900\n"
+"POT-Creation-Date: 2018-08-06 14:49+0900\n"
+"PO-Revision-Date: 2018-08-06 14:49+0900\n"
 "Last-Translator: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
 "Language-Team: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
 "Language: ja\n"
@@ -29,23 +29,23 @@ msgstr ""
 msgid "Access"
 msgstr "アクセス"
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:67
+#: app/Hametuha/Hamelp/Hooks/PostType.php:79
 msgid "FAQ Category"
 msgstr "FAQカテゴリー"
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:96
+#: app/Hametuha/Hamelp/Hooks/PostType.php:108
 msgid "FAQ"
 msgstr "FAQ"
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:182
+#: app/Hametuha/Hamelp/Hooks/PostType.php:194
 msgid "You can limit access to this post."
 msgstr "この投稿へのアクセスを制限できます。"
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:202
+#: app/Hametuha/Hamelp/Hooks/PostType.php:214
 msgid "Not restricted"
 msgstr "制限なし"
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:267
+#: app/Hametuha/Hamelp/Hooks/PostType.php:279
 #, php-format
 msgid ""
 "This %1$s is restricted and accessible only for %2$s. If you are not logged "
@@ -102,8 +102,8 @@ msgid "Hamelp"
 msgstr "Hamelp"
 
 #. Plugin URI of the plugin/theme
-msgid "PLUGIN SITE HERE"
-msgstr ""
+msgid "https://wordpress.org/extend/plugins/hamelp"
+msgstr "https://ja.wordpress.org/extend/plugins/hamelp"
 
 #. Description of the plugin/theme
 msgid "FAQ generator by Hametuha."

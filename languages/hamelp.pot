@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Hamelp\n"
-"POT-Creation-Date: 2018-08-03 19:40+0900\n"
+"POT-Creation-Date: 2018-08-06 14:49+0900\n"
 "PO-Revision-Date: 2018-07-31 17:54+0900\n"
 "Last-Translator: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
 "Language-Team: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
@@ -29,23 +29,23 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:67
+#: app/Hametuha/Hamelp/Hooks/PostType.php:79
 msgid "FAQ Category"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:96
+#: app/Hametuha/Hamelp/Hooks/PostType.php:108
 msgid "FAQ"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:182
+#: app/Hametuha/Hamelp/Hooks/PostType.php:194
 msgid "You can limit access to this post."
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:202
+#: app/Hametuha/Hamelp/Hooks/PostType.php:214
 msgid "Not restricted"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:267
+#: app/Hametuha/Hamelp/Hooks/PostType.php:279
 #, php-format
 msgid ""
 "This %1$s is restricted and accessible only for %2$s. If you are not "
@@ -98,7 +98,7 @@ msgid "Hamelp"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
-msgid "PLUGIN SITE HERE"
+msgid "https://wordpress.org/extend/plugins/hamelp"
 msgstr ""
 
 #. Description of the plugin/theme
