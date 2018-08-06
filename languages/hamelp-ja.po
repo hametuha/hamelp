@@ -1,23 +1,23 @@
 msgid ""
 msgstr ""
-"Plural-Forms: nplurals=1; plural=0;\n"
 "Project-Id-Version: Hamelp\n"
-"POT-Creation-Date: 2018-07-31 17:56+0900\n"
-"PO-Revision-Date: 2018-08-01 18:55+0900\n"
+"POT-Creation-Date: 2018-08-03 19:40+0900\n"
+"PO-Revision-Date: 2018-08-03 19:41+0900\n"
+"Last-Translator: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
 "Language-Team: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 2.0.6\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: hamelp.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;"
-"esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;"
-"esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"Last-Translator: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
-"Language: ja\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
+"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 "X-Poedit-SearchPathExcluded-1: node_modules\n"
@@ -25,13 +25,35 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-3: *.css\n"
 "X-Poedit-SearchPathExcluded-4: *.scss\n"
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:57
+#: app/Hametuha/Hamelp/Hooks/PostType.php:26
+msgid "Access"
+msgstr "アクセス"
+
+#: app/Hametuha/Hamelp/Hooks/PostType.php:67
 msgid "FAQ Category"
 msgstr "FAQカテゴリー"
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:86
+#: app/Hametuha/Hamelp/Hooks/PostType.php:96
 msgid "FAQ"
 msgstr "FAQ"
+
+#: app/Hametuha/Hamelp/Hooks/PostType.php:182
+msgid "You can limit access to this post."
+msgstr "この投稿へのアクセスを制限できます。"
+
+#: app/Hametuha/Hamelp/Hooks/PostType.php:202
+msgid "Not restricted"
+msgstr "制限なし"
+
+#: app/Hametuha/Hamelp/Hooks/PostType.php:267
+#, php-format
+msgid ""
+"This %1$s is restricted and accessible only for %2$s. If you are not logged "
+"in please <a href=\"%3$s\" class=\"alert-link\" rel=\"nofollow\">log in</a>."
+msgstr ""
+"この%1$sは制限されており、%2$sだけが閲覧できます。ログインしていない場合は"
+"<a href=\"%3$s\" class=\"alert-link\" rel=\"nofollow\">ログイン</a>してくだ"
+"さい。"
 
 #: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:29
 msgid "Found Posts:"
@@ -61,7 +83,7 @@ msgstr "ボタンテキスト"
 msgid "Search"
 msgstr "検索"
 
-#: app/Hametuha/Hamelp/Pattern/ShortCode.php:107
+#: app/Hametuha/Hamelp/Pattern/ShortCode.php:106
 #, php-format
 msgid "Default value is \"%s\"."
 msgstr "初期値は \"%s\" です。"
@@ -72,8 +94,8 @@ msgid ""
 "Hamelp requires PHP %1$s, but your PHP version is %2$s. Please consider "
 "upgrade."
 msgstr ""
-"Hamelp は PHP %1$s 必須ですが、ご利用のPHPバージョンは %2$s です。アップ"
-"グレードを検討してください。"
+"Hamelp は PHP %1$s 必須ですが、ご利用のPHPバージョンは %2$s です。アップグ"
+"レードを検討してください。"
 
 #. Plugin Name of the plugin/theme
 msgid "Hamelp"

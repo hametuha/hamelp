@@ -27,6 +27,18 @@ class PostType extends Singleton {
 			}
 		}, 10, 2 );
 		add_filter( 'the_content', [ $this, 'restrict_content' ], 20 );
+		add_action( 'current_screen', [ $this, 'flush_rules' ] );
+	}
+
+	/**
+	 * Flush rewrite rules.
+	 */
+	public function flush_rules() {
+		$screen = get_current_screen();
+		if ( ( in_array( $screen->base, [ 'edit', 'post', 'edit-tags' ] ) && $this->is_supported( $screen->post_type ) ) ) {
+			// This is faq related page.
+			flush_rewrite_rules();
+		}
 	}
 
 	/**

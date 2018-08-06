@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Hamelp\n"
-"POT-Creation-Date: 2018-07-31 17:56+0900\n"
+"POT-Creation-Date: 2018-08-03 19:40+0900\n"
 "PO-Revision-Date: 2018-07-31 17:54+0900\n"
 "Last-Translator: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
 "Language-Team: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
@@ -16,8 +16,8 @@ msgstr ""
 "X-Poedit-WPHeader: hamelp.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
-"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
+"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 "X-Poedit-SearchPathExcluded-1: node_modules\n"
@@ -25,12 +25,32 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-3: *.css\n"
 "X-Poedit-SearchPathExcluded-4: *.scss\n"
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:57
+#: app/Hametuha/Hamelp/Hooks/PostType.php:26
+msgid "Access"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/PostType.php:67
 msgid "FAQ Category"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:86
+#: app/Hametuha/Hamelp/Hooks/PostType.php:96
 msgid "FAQ"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/PostType.php:182
+msgid "You can limit access to this post."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/PostType.php:202
+msgid "Not restricted"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/PostType.php:267
+#, php-format
+msgid ""
+"This %1$s is restricted and accessible only for %2$s. If you are not "
+"logged in please <a href=\"%3$s\" class=\"alert-link\" rel=\"nofollow"
+"\">log in</a>."
 msgstr ""
 
 #: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:29
@@ -61,7 +81,7 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Pattern/ShortCode.php:107
+#: app/Hametuha/Hamelp/Pattern/ShortCode.php:106
 #, php-format
 msgid "Default value is \"%s\"."
 msgstr ""

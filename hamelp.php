@@ -1,14 +1,14 @@
 <?php
 /**
  * Plugin Name:     Hamelp
- * Plugin URI:      PLUGIN SITE HERE
+ * Plugin URI:     	https://wordpress.org/extend/plugins/hamelp
  * Description:     FAQ generator by Hametuha.
+ * Version:         1.0.0
  * Author:          Takahashi_Fumiki
  * Author URI:      https://takahashifumiki.com
  * Text Domain:     hamelp
  * Domain Path:     /languages
- * Version:         0.1.0
- *
+ * License:         GPL3 or Later
  * @package         hamelp
  */
 

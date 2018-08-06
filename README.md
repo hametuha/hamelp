@@ -1,2 +1,44 @@
 # hamelp
+
+Contributors: Takahashi_Fumiki, hametuha  
+Tags: faq,help  
+Requires at least: 4.7  
+Tested up to: 4.9.8  
+Stable tag: 1.0.0  
+Requires PHP: 5.4  
+License: GPL 3.0 or later  
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
+
 FAQ template plugin by Hametuha.
+
+## Description
+
+This plugin add new custom post type 'FAQ'. With some functionality, you can build help center for your user.
+What is help center? We collect example at our [github wiki](https://github.com/hametuha/hamelp/wiki).
+
+### Creating Portal
+
+This plugin will provide...
+
+* Custom post type with single page and archive page.
+* Custom taxonomy associated to CPT.
+* Incremental search box.
+
+##  Installation 
+
+Install itself is easy. Auto install from admin panel is recommended. Search with `hamelp`.
+
+1. Donwload and unpack plugin file, upload `hamelp` folder to `/wp-content/plugins` directory.
+2. Activate it from admin panel.
+
+## Frequently Asked Questions
+
+> How can I contribute?
+
+You can contribute to our github repo. Any [issues](https://github.com/hametuha/hamelp/issues) or [PRs](https://github.com/hametuha/hamelp/pulls) are welcomed.
+
+## Changelog
+
+### 1.0.0
+
+* Initial release.
