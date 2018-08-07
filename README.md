@@ -14,7 +14,7 @@ FAQ template plugin by Hametuha.
 ## Description
 
 This plugin add new custom post type 'FAQ'. With some functionality, you can build help center for your user.
-What is help center? We collect example at our [github wiki](https://github.com/hametuha/hamelp/wiki).
+What is help center? We collect examples at our [github wiki](https://github.com/hametuha/hamelp/wiki).
 
 ### Creating Portal
 
@@ -23,6 +23,18 @@ This plugin will provide...
 * Custom post type with single page and archive page.
 * Custom taxonomy associated to CPT.
 * Incremental search box.
+
+You can use shortcode `hamelp-search` in page content.
+
+<pre>
+[hamelp-search labe='Enter your question here.'][/hamelp-search]
+</pre>
+
+And you can call in your theme altenatively.
+
+<pre>
+&lt;?php echo do_shortcode( '[hamelp-search][/hamelp-search]' ) ?&gt;
+</pre>
 
 ##  Installation 
 
