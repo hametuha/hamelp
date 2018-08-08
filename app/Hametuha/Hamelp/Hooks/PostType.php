@@ -117,7 +117,7 @@ class PostType extends Singleton {
 	 */
 	public function is_supported( $post_type ) {
 		$post_types = $this->get_post_types();
-		return array_key_exists( $post_type, $post_types );
+		return array_key_exists( (string) $post_type, $post_types );
 	}
 
 	/**

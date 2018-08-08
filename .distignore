@@ -26,7 +26,7 @@ README.md
 wp-cli.local.yml
 yarn.lock
 tests
-vendor
+gulpfile.js
 node_modules
 *.sql
 *.tar.gz

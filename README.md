@@ -4,7 +4,7 @@ Contributors: Takahashi_Fumiki, hametuha
 Tags: faq,help  
 Requires at least: 4.7  
 Tested up to: 4.9.8  
-Stable tag: 1.0.0  
+Stable tag: 1.0.1  
 Requires PHP: 5.4  
 License: GPL 3.0 or later  
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -50,6 +50,10 @@ Install itself is easy. Auto install from admin panel is recommended. Search wit
 You can contribute to our github repo. Any [issues](https://github.com/hametuha/hamelp/issues) or [PRs](https://github.com/hametuha/hamelp/pulls) are welcomed.
 
 ## Changelog
+
+### 1.0.1
+
+* Fix no vendor directory bug.
 
 ### 1.0.0
 
