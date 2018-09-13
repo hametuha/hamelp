@@ -48,16 +48,17 @@ class PostType extends Singleton {
 		$post_types = $this->get_post_types();
 		foreach ( $post_types as $post_type => $label ) {
 			$args          = [
-				'label'           => $label,
-				'description'     => '',
-				'public'          => true,
-				'menu_position'   => 20,
-				'menu_icon'       => 'dashicons-editor-help',
-				'supports'        => array( 'title', 'editor', 'author', 'comments' ),
-				'has_archive'     => true,
-				'capability_type' => 'page',
-				'rewrite'         => array( 'slug' => $post_type ),
-				'show_in_rest'    => true,
+				'label'            => $label,
+				'description'      => '',
+				'public'           => true,
+				'menu_position'    => 20,
+				'menu_icon'        => 'dashicons-editor-help',
+				'supports'         => array( 'title', 'editor', 'author', 'comments' ),
+				'has_archive'      => true,
+				'capability_type'  => 'page',
+				'rewrite'          => array( 'slug' => $post_type ),
+				'show_in_rest'     => true,
+				'show_in_nav_menu' => true,
 			];
 			/**
 			 * hamelp_post_type_args
@@ -76,6 +77,7 @@ class PostType extends Singleton {
 			'public' => true,
 			'hierarchical' => true,
 			'rewrite'      => array( 'slug' => 'faq-cat' ),
+			'show_in_rest' => true,
 			'label'        => __( 'FAQ Category', 'hamelp' ),
 			'show_admin_column' => true,
 		];
