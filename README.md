@@ -51,6 +51,10 @@ You can contribute to our github repo. Any [issues](https://github.com/hametuha/
 
 ## Changelog
 
+### 1.0.3
+
+* Bugfix
+
 ### 1.0.2
 
 * Fix taxonomy to be shown in Gutenberg.
