@@ -61,3 +61,15 @@ function hamelp_version() {
 	}
 	return $version;
 }
+
+/**
+ * Get accessibility of help document.
+ *
+ * @param null|int|WP_post $post
+ *
+ * @return string
+ */
+function hamelp_get_accessibility( $post = null ) {
+	$post = get_post( $post );
+	return (string) get_post_meta( $post->ID, '_accessibility', true );
+}

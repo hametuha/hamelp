@@ -189,7 +189,7 @@ class PostType extends Singleton {
 	 */
 	public function do_meta_box( $post ) {
 		wp_nonce_field( 'hamlep_accessibility', '_hamela11ypnonce', false );
-		$current_value = $this->get_accessibility( $post );
+		$current_value = hamelp_get_accessibility( $post );
 		global $wp_roles;
 		?>
 		<p class="description">
@@ -235,17 +235,6 @@ class PostType extends Singleton {
 	}
 
 	/**
-	 * Get accessibility.
-	 *
-	 * @param null|int|\WP_Post $post
-	 * @return string
-	 */
-	public function get_accessibility( $post = null ) {
-		$post = get_post( $post );
-		return (string) get_post_meta( $post->ID, '_accessibility', true );
-	}
-
-	/**
 	 * Return content.
 	 *
 	 * @param string $content
@@ -255,7 +244,7 @@ class PostType extends Singleton {
 		if ( ! $this->is_supported( get_post_type() ) ) {
 			return $content;
 		}
-		$accessibility = $this->get_accessibility();
+		$accessibility = hamelp_get_accessibility();
 		$can = true;
 		$accessibility_type = $this->get_accessibility_type();
 		switch ( $accessibility ) {
