@@ -3,7 +3,7 @@
  * Plugin Name:     Hamelp
  * Plugin URI:     	https://wordpress.org/extend/plugins/hamelp
  * Description:     FAQ generator by Hametuha.
- * Version:         1.0.2
+ * Version:         1.0.3
  * Author:          Takahashi_Fumiki
  * Author URI:      https://takahashifumiki.com
  * Text Domain:     hamelp
