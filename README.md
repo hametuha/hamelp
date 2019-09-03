@@ -1,10 +1,10 @@
-# hamelp
+# Hamelp
 
 Contributors: Takahashi_Fumiki, hametuha  
 Tags: faq,help  
 Requires at least: 4.7  
-Tested up to: 5.0.3  
-Stable tag: 1.0.3  
+Tested up to: 5.2.2  
+Stable tag: 1.0.4  
 Requires PHP: 5.4  
 License: GPL 3.0 or later  
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -26,9 +26,9 @@ This plugin will provide...
 
 You can use shortcode `hamelp-search` in page content.
 
-<pre>
-[hamelp-search labe='Enter your question here.'][/hamelp-search]
-</pre>
+```
+[hamelp-search label='Enter your question here.'][/hamelp-search]
+```
 
 And you can call in your theme altenatively.
 
@@ -50,6 +50,10 @@ Install itself is easy. Auto install from admin panel is recommended. Search wit
 You can contribute to our github repo. Any [issues](https://github.com/hametuha/hamelp/issues) or [PRs](https://github.com/hametuha/hamelp/pulls) are welcomed.
 
 ## Changelog
+
+### 1.0.4
+
+* Add [structured data](https://developers.google.com/search/docs/data-types/faqpage) for FAQPage.
 
 ### 1.0.3
 
