@@ -17,6 +17,9 @@ cache:
   directories:
     - $HOME/.composer/cache
 
+services:
+  - mysql
+
 matrix:
   include:
     - php: 7.2
