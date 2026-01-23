@@ -9,10 +9,25 @@ namespace Hametuha\Hamelp\Pattern;
  */
 abstract class ShortCode extends Singleton {
 
+	/**
+	 * Shortcode name.
+	 *
+	 * @var string
+	 */
 	protected $code = '';
 
+	/**
+	 * Whether this shortcode has inner content.
+	 *
+	 * @var bool
+	 */
 	protected $inner_content = false;
 
+	/**
+	 * Dashicon class name for shortcode UI.
+	 *
+	 * @var string
+	 */
 	protected $dashicons = '';
 
 	/**
@@ -33,14 +48,14 @@ abstract class ShortCode extends Singleton {
 	/**
 	 * Prepare and render codes.
 	 *
-	 * @param array $atts
+	 * @param array  $atts
 	 * @param string $content
 	 * @return string
 	 */
 	public function prepare_rendering( $atts = [], $content = '' ) {
 		$default = [];
 		foreach ( $this->get_code_attributes() as $attr ) {
-			$default[ $attr['attr'] ] = isset( $attr['default'] ) && $attr['default'] ? $attr['default']  : '';
+			$default[ $attr['attr'] ] = isset( $attr['default'] ) && $attr['default'] ? $attr['default'] : '';
 		}
 		$atts = shortcode_atts( $default, $atts, $this->get_code() );
 		return $this->trim( $this->render_code( $atts, $content ) );
@@ -97,7 +112,7 @@ abstract class ShortCode extends Singleton {
 	 * @return array
 	 */
 	protected function fill_description( $attr ) {
-		if ( ! isset( $attr['default'] ) || ! $attr['default']) {
+		if ( ! isset( $attr['default'] ) || ! $attr['default'] ) {
 			return $attr;
 		}
 		if ( isset( $attr['description'] ) && ! empty( $attr['description'] ) ) {
@@ -121,7 +136,7 @@ abstract class ShortCode extends Singleton {
 		if ( $this->code ) {
 			return $this->code;
 		} else {
-			$class_name = explode( "\\", get_called_class() );
+			$class_name = explode( '\\', get_called_class() );
 			$class_name = $class_name[ count( $class_name ) - 1 ];
 			return strtolower( $class_name );
 		}
@@ -130,12 +145,20 @@ abstract class ShortCode extends Singleton {
 	/**
 	 * Trim html and remove
 	 *
-	 * @param $html
+	 * @param string $html
 	 * @return string
 	 */
 	protected function trim( $html ) {
-		return implode( "\n", array_filter( array_map( function( $line ) {
-			return trim( $line );
-		}, explode( "\n", $html ) ) ) );
+		return implode(
+			"\n",
+			array_filter(
+				array_map(
+					function ( $line ) {
+						return trim( $line );
+					},
+					explode( "\n", $html )
+				)
+			)
+		);
 	}
 }
