@@ -1,0 +1,15 @@
+{
+	"phpVersion": "7.4",
+	"plugins": [
+		".",
+		"https://downloads.wordpress.org/plugin/query-monitor.latest-stable.zip"
+	],
+	"themes": [
+		"https://downloads.wordpress.org/theme/twentytwentyone.latest-stable.zip"
+	],
+	"config": {
+		"WP_DEBUG": true,
+		"SCRIPT_DEBUG": true,
+		"WP_DEBUG_LOG": true
+	}
+}
