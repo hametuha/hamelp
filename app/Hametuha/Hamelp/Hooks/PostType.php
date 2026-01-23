@@ -2,7 +2,6 @@
 
 namespace Hametuha\Hamelp\Hooks;
 
-
 use Hametuha\Hamelp\Pattern\Singleton;
 
 /**
@@ -12,6 +11,11 @@ use Hametuha\Hamelp\Pattern\Singleton;
  */
 class PostType extends Singleton {
 
+	/**
+	 * Taxonomy name for FAQ category.
+	 *
+	 * @var string
+	 */
 	public $taxonomy = 'faq_cat';
 
 	/**
@@ -21,11 +25,15 @@ class PostType extends Singleton {
 		add_action( 'init', [ $this, 'register_post_type' ] );
 		add_filter( 'template_include', [ $this, 'template_include' ] );
 		add_action( 'save_post', [ $this, 'save_post' ], 10, 2 );
-		add_action( 'add_meta_boxes', function( $post_type, $post ) {
-			if ( $this->is_supported( $post_type ) ) {
-				add_meta_box( 'faq_accessibility', __( 'Access', 'hamelp' ), [ $this, 'do_meta_box' ], $post_type, 'side' );
-			}
-		}, 10, 2 );
+		add_action(
+			'add_meta_boxes',
+			function ( $post_type ) {
+				if ( $this->is_supported( $post_type ) ) {
+					add_meta_box( 'faq_accessibility', __( 'Access', 'hamelp' ), [ $this, 'do_meta_box' ], $post_type, 'side' );
+				}
+			},
+			10
+		);
 		add_filter( 'the_content', [ $this, 'restrict_content' ], 20 );
 		add_action( 'current_screen', [ $this, 'flush_rules' ] );
 	}
@@ -35,7 +43,7 @@ class PostType extends Singleton {
 	 */
 	public function flush_rules() {
 		$screen = get_current_screen();
-		if ( ( in_array( $screen->base, [ 'edit', 'post', 'edit-tags' ] ) && $this->is_supported( $screen->post_type ) ) ) {
+		if ( ( in_array( $screen->base, [ 'edit', 'post', 'edit-tags' ], true ) && $this->is_supported( $screen->post_type ) ) ) {
 			// This is faq related page.
 			flush_rewrite_rules();
 		}
@@ -47,7 +55,7 @@ class PostType extends Singleton {
 	public function register_post_type() {
 		$post_types = $this->get_post_types();
 		foreach ( $post_types as $post_type => $label ) {
-			$args          = [
+			$args = [
 				'label'            => $label,
 				'description'      => '',
 				'public'           => true,
@@ -74,17 +82,18 @@ class PostType extends Singleton {
 		}
 		// FAQ taxonomy.
 		$tax_args = [
-			'public' => true,
-			'hierarchical' => true,
-			'rewrite'      => array( 'slug' => 'faq-cat' ),
-			'show_in_rest' => true,
-			'label'        => __( 'FAQ Category', 'hamelp' ),
+			'public'            => true,
+			'hierarchical'      => true,
+			'rewrite'           => array( 'slug' => 'faq-cat' ),
+			'show_in_rest'      => true,
+			'label'             => __( 'FAQ Category', 'hamelp' ),
 			'show_admin_column' => true,
 		];
 		/**
 		 * hamelp_taxonomy_args
 		 *
 		 * Customize taxonomy setting via this filter.
+		 *
 		 * @param array $tax_args
 		 * @return array
 		 */
@@ -93,7 +102,7 @@ class PostType extends Singleton {
 	}
 
 	/**
-	 *
+	 * Get supported post types.
 	 *
 	 * @return array
 	 */
@@ -101,14 +110,17 @@ class PostType extends Singleton {
 		/**
 		 * hamelp_post_types
 		 *
-		 * You can add post types via this filters.
+		 * You can add post types via this filter.
 		 *
 		 * @param array $post_types 'post' => 'Post'.
 		 * @return array
 		 */
-		return apply_filters( 'hamelp_post_types', [
-			'faq' => __( 'FAQ', 'hamelp' ),
-		] );
+		return apply_filters(
+			'hamelp_post_types',
+			[
+				'faq' => __( 'FAQ', 'hamelp' ),
+			]
+		);
 	}
 
 	/**
@@ -130,9 +142,7 @@ class PostType extends Singleton {
 	 */
 	public function template_include( $template ) {
 		$post_types = array_keys( $this->get_post_types() );
-		if ( is_singular( $post_types ) ) {
-			// Do nothing because it's normal thing.
-		} elseif( is_post_type_archive( $post_types ) || is_tax( $this->taxonomy ) ) {
+		if ( ! is_singular( $post_types ) && ( is_post_type_archive( $post_types ) || is_tax( $this->taxonomy ) ) ) {
 			$template = $this->template_path( 'archive-faq.php', $template );
 		}
 		return $template;
@@ -150,7 +160,7 @@ class PostType extends Singleton {
 			get_template_directory(),
 			get_template_directory() . '/template-parts/hamelp',
 		];
-		if ( get_template_directory() != get_stylesheet_directory() ) {
+		if ( get_template_directory() !== get_stylesheet_directory() ) {
 			$directory_to_scan[] = get_stylesheet_directory();
 			$directory_to_scan[] = get_stylesheet_directory() . '/template-parts/hamelp';
 		}
@@ -164,7 +174,7 @@ class PostType extends Singleton {
 		 * @return array
 		 */
 		$directory_to_scan = apply_filters( 'hamelp_template_to_scan', $directory_to_scan, $file );
-		$found = $default;
+		$found             = $default;
 		foreach ( $directory_to_scan as $dir ) {
 			$file_path = $dir . '/' . $file;
 			if ( file_exists( $file_path ) ) {
@@ -175,17 +185,21 @@ class PostType extends Singleton {
 	}
 
 	/**
-	 * @param int     $post_id
+	 * Save post meta for accessibility.
+	 *
+	 * @param int      $post_id
 	 * @param \WP_Post $post
 	 */
 	public function save_post( $post_id, $post ) {
-		if ( isset( $_POST['_hamela11ypnonce'] ) && wp_verify_nonce(  $_POST['_hamela11ypnonce'], 'hamlep_accessibility' ) ) {
+		if ( isset( $_POST['_hamela11ypnonce'] ) && wp_verify_nonce( $_POST['_hamela11ypnonce'], 'hamlep_accessibility' ) ) {
 			update_post_meta( $post_id, '_accessibility', $_POST['hamelp_accessibility'] );
 		}
 	}
 
 	/**
-	 * @param int $post
+	 * Render accessibility meta box.
+	 *
+	 * @param \WP_Post $post
 	 */
 	public function do_meta_box( $post ) {
 		wp_nonce_field( 'hamlep_accessibility', '_hamela11ypnonce', false );
@@ -193,16 +207,17 @@ class PostType extends Singleton {
 		global $wp_roles;
 		?>
 		<p class="description">
-			<?php esc_html_e( 'You can limit access to this post.', 'hamelp' ) ?>
+			<?php esc_html_e( 'You can limit access to this post.', 'hamelp' ); ?>
 		</p>
 		<?php foreach ( $this->get_accessibility_type() as $key => $value ) : ?>
 			<p>
 				<label>
-					<input type="radio" name="hamelp_accessibility" value="<?php echo esc_attr( $key ) ?>" <?php checked( $key, $current_value ) ?> />
-					<?php echo esc_html( $value['label'] ) ?>
+					<input type="radio" name="hamelp_accessibility" value="<?php echo esc_attr( $key ); ?>" <?php checked( $key, $current_value ); ?> />
+					<?php echo esc_html( $value['label'] ); ?>
 				</label>
 			</p>
-		<?php endforeach;
+			<?php
+		endforeach;
 	}
 
 	/**
@@ -244,8 +259,8 @@ class PostType extends Singleton {
 		if ( ! $this->is_supported( get_post_type() ) ) {
 			return $content;
 		}
-		$accessibility = hamelp_get_accessibility();
-		$can = true;
+		$accessibility      = hamelp_get_accessibility();
+		$can                = true;
 		$accessibility_type = $this->get_accessibility_type();
 		switch ( $accessibility ) {
 			case 'administrator':
@@ -264,15 +279,17 @@ class PostType extends Singleton {
 		if ( $can ) {
 			return $content;
 		}
-		$obj = get_post_type_object( get_post_type() );
+		$obj       = get_post_type_object( get_post_type() );
 		$login_url = wp_login_url( get_permalink() );
-		$message = wp_kses_post( sprintf(
-			__( 'This %1$s is restricted and accessible only for %2$s. If you are not logged in please <a href="%3$s" class="alert-link" rel="nofollow">log in</a>.', 'hamelp' ),
-			$obj->label,
-			$accessibility_type[ $accessibility ]['label'],
-			$login_url
-		) );
-		$message = sprintf( '<div class="hamelp-alert alert alert-warning">%s</div>', $message );
+		$message   = wp_kses_post(
+			sprintf(
+				__( 'This %1$s is restricted and accessible only for %2$s. If you are not logged in please <a href="%3$s" class="alert-link" rel="nofollow">log in</a>.', 'hamelp' ),
+				$obj->label,
+				$accessibility_type[ $accessibility ]['label'],
+				$login_url
+			)
+		);
+		$message   = sprintf( '<div class="hamelp-alert alert alert-warning">%s</div>', $message );
 		/**
 		 * hamelp_restricted_content
 		 *

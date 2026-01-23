@@ -1,33 +1,75 @@
 <?php
 /**
  * Plugin Name:     Hamelp
- * Plugin URI:     	https://wordpress.org/extend/plugins/hamelp
+ * Plugin URI:      https://wordpress.org/plugins/hamelp
  * Description:     FAQ generator by Hametuha.
  * Version:         1.0.4
  * Author:          Takahashi Fumiki
  * Author URI:      https://takahashifumiki.com
  * Text Domain:     hamelp
  * Domain Path:     /languages
+ * Requires at least: 6.6
+ * Requires PHP:    7.4
  * License:         GPL3 or Later
+ *
  * @package         hamelp
  */
 
 // Do not load directory.
 defined( 'ABSPATH' ) || die();
 
-// Check version and load plugin if possible.
-add_action( 'plugins_loaded', 'hamelp_init' );
-
+/**
+ * Check version and load plugin if possible.
+ */
 function hamelp_init() {
 	// i18n.
-	load_plugin_textdomain( 'hamelp', false, basename( dirname( __FILE__ ) ) . '/languages' );
-	if ( version_compare( phpversion(), '5.4.0', '>=' ) ) {
-		require dirname( __FILE__ ) . '/vendor/autoload.php';
-		call_user_func( [ 'Hametuha\\Hamelp', 'get' ]);
+	load_plugin_textdomain( 'hamelp', false, basename( __DIR__ ) . '/languages' );
+	if ( version_compare( phpversion(), '7.4.0', '>=' ) ) {
+		require __DIR__ . '/vendor/autoload.php';
+		call_user_func( [ 'Hametuha\\Hamelp', 'get' ] );
 	} else {
 		add_action( 'admin_notices', 'hamelp_version_error' );
 	}
 }
+add_action( 'plugins_loaded', 'hamelp_init' );
+
+
+/**
+ * Register all file in wp-dependencies.json
+ *
+ * @return void
+ */
+function hamelp_register_assets() {
+	$path = __DIR__ . '/wp-dependencies.json';
+	if ( ! file_exists( $path ) ) {
+		return;
+	}
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+	$deps = json_decode( file_get_contents( $path ), true );
+	if ( empty( $deps ) ) {
+		return;
+	}
+	// Register all assets in json
+	foreach ( $deps as $dep ) {
+		if ( empty( $dep['path'] ) ) {
+			continue;
+		}
+		$url = plugin_dir_url( __DIR__ . '/assets' ) . $dep['path'];
+		switch ( $dep['ext'] ) {
+			case 'css':
+				wp_register_style( $dep['handle'], $url, $dep['deps'], $dep['hash'], $dep['screen'] );
+				break;
+			case 'js':
+				$footer = [ 'in_footer' => $dep['footer'] ];
+				if ( in_array( $dep['strategy'], [ 'defer', 'async' ], true ) ) {
+					$footer['strategy'] = $dep['strategy'];
+				}
+				wp_register_script( $dep['handle'], $url, $dep['deps'], $dep['hash'], $footer );
+				break;
+		}
+	}
+}
+add_action( 'init', 'hamelp_register_assets' );
 
 /**
  * Display version error
@@ -36,7 +78,7 @@ function hamelp_init() {
  */
 function hamelp_version_error() {
 	// translators: %1$s required PHP version, %2$s current PHP version.
-	printf( '<div class="error"><p>%s</p></div>', sprintf( esc_html__( 'Hamelp requires PHP %1$s, but your PHP version is %2$s. Please consider upgrade.', 'hamelp' ), phpversion() ) );
+	printf( '<div class="error"><p>%s</p></div>', sprintf( esc_html__( 'Hamelp requires PHP %1$s, but your PHP version is %2$s. Please consider upgrade.', 'hamelp' ), '7.4', esc_html( phpversion() ) ) );
 }
 
 /**
@@ -54,10 +96,13 @@ function hamelp_asset_url() {
 function hamelp_version() {
 	static $version = null;
 	if ( is_null( $version ) ) {
-		$file_info = get_file_data( __FILE__, [
-			'version' => 'Version:'
-		] );
-		$version = trim( $file_info['version'] );
+		$file_info = get_file_data(
+			__FILE__,
+			[
+				'version' => 'Version:',
+			]
+		);
+		$version   = trim( $file_info['version'] );
 	}
 	return $version;
 }

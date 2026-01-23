@@ -2,7 +2,6 @@
 
 namespace Hametuha\Hamelp\Hooks;
 
-
 use Hametuha\Hamelp\Pattern\Singleton;
 
 /**
@@ -32,15 +31,15 @@ class StructuredData extends Singleton {
 			return;
 		}
 		$json = $this->get_json_ld( get_queried_object() );
-		$json = json_encode( $json );
+		$json = wp_json_encode( $json );
 		if ( ! $json ) {
 			return;
 		}
-		echo <<<HTML
-<script type="application/ld+json">
-{$json}
-</script>
-HTML;
+		?>
+		<script type="application/ld+json">
+		<?php echo $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON-LD structured data ?>
+		</script>
+		<?php
 	}
 
 	/**
@@ -51,17 +50,17 @@ HTML;
 	 */
 	public function get_json_ld( $post ) {
 		$json = [
-			'@context' => 'https://schema.org',
-			'@type'    => 'FAQPage',
+			'@context'   => 'https://schema.org',
+			'@type'      => 'FAQPage',
 			'mainEntity' => [
 				[
-					'@type' => 'Question',
-					'name'  => get_the_title( $post ),
+					'@type'          => 'Question',
+					'name'           => get_the_title( $post ),
 					'acceptedAnswer' => [
 						'@type' => 'Answer',
 						'text'  => apply_filters( 'the_content', $post->post_content ),
 					],
-				]
+				],
 			],
 		];
 		return apply_filters( 'hamelp_json_ld_data', $json, $post );

@@ -1,12 +1,10 @@
 # Hamelp
 
-Contributors: Takahashi_Fumiki, hametuha  
-Tags: faq,help  
-Requires at least: 4.7  
-Tested up to: 5.2.2  
-Stable tag: 1.0.4  
-Requires PHP: 5.4  
-License: GPL 3.0 or later  
+Contributors: Takahashi_Fumiki, hametuha
+Tags: faq,help
+Tested up to: 6.8
+Stable Tag: 1.0.4
+License: GPL 3.0 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 FAQ template plugin by Hametuha.
@@ -36,7 +34,7 @@ And you can call in your theme altenatively.
 &lt;?php echo do_shortcode( '[hamelp-search][/hamelp-search]' ) ?&gt;
 </pre>
 
-##  Installation 
+##  Installation
 
 Install itself is easy. Auto install from admin panel is recommended. Search with `hamelp`.
 

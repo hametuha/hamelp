@@ -9,6 +9,11 @@ namespace Hametuha\Hamelp\Pattern;
  */
 abstract class Singleton {
 
+	/**
+	 * Instance holder.
+	 *
+	 * @var static[]
+	 */
 	protected static $instances = [];
 
 	/**
