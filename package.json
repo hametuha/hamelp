@@ -1,49 +1,71 @@
 {
-  "name": "hamelp",
-  "version": "0.1.0",
-  "homepage": "https://github.com/hametuha/hamelp",
-  "description": "FAQ generator",
-  "main": "gulpfile.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hametuha/hamelp.git"
-  },
-  "bugs": {
-    "url": "https://github.com/hametuha/hamelp/issues"
-  },
-  "scripts": {
-    "start": "gulp build",
-    "watch": "gulp watch",
-    "gulp": "gulp"
-  },
-  "author": "Hametuha INC.",
-  "license": "GPL-3.0",
-  "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "chart.js": "^2.7.1",
-    "event-stream": "^3.3.2",
-    "gulp": "^3.9.0",
-    "gulp-autoprefixer": "^5.0.0",
-    "gulp-babel": "^7.0.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-filter": "^5.1",
-    "gulp-imagemin": "^4.1",
-    "gulp-jshint": "^2.0",
-    "gulp-load-plugins": "^1.2",
-    "gulp-notify": "^3.2.0",
-    "gulp-pleeease": "^2.0",
-    "gulp-plumber": "^1.0.0",
-    "gulp-sass": "^4.0",
-    "gulp-sass-bulk-import": "^1.0",
-    "gulp-sourcemaps": "^2.6",
-    "gulp-uglify": "^3.0",
-    "gulp-util": "^3.0",
-    "html5shiv": "^3.7.3",
-    "imagemin-pngquant": "^6.0",
-    "jquery-match-height": "^0.7",
-    "jshint": "^2.9.1",
-    "jshint-stylish": "^2.0",
-    "lodash": "^4.2.1"
-  }
+	"name": "hamelp",
+	"version": "1.0.4",
+	"description": "FAQ generator for WordPress",
+	"scripts": {
+		"package": "npm run build:css && npm run build:js && npm run dump",
+		"watch": "npm-watch",
+		"build:css": "sass ./src/scss/:./assets/css/ --style=compressed && postcss ./assets/css/*.css --use autoprefixer --replace",
+		"build:js": "grab-deps js src/js assets/js",
+		"build:blocks": "wp-scripts build --source-path=src/blocks --output-path=assets/blocks",
+		"dump": "grab-deps dump assets/js,assets/css",
+		"fix": "npm run fix:js && npm run fix:css",
+		"fix:js": "wp-scripts lint-js --fix './src/js/**/*.js' './src/blocks/**/*.js'",
+		"fix:css": "wp-scripts lint-style --fix './src/scss/**/*.scss' './src/blocks/**/*.scss'",
+		"lint": "npm run lint:css && npm run lint:js",
+		"lint:css": "wp-scripts lint-style './src/scss/**/*.scss'",
+		"lint:js": "wp-scripts lint-js './src/js/**/*.js'"
+	},
+	"engines": {
+		"node": ">=20.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/hametuha/hamelp.git"
+	},
+	"author": "Hametuha INC.",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/hametuha/hamelp/issues"
+	},
+	"homepage": "https://github.com/hametuha/hamelp",
+	"devDependencies": {
+		"@kunoichi/grab-deps": "^3.0.0",
+		"@wordpress/scripts": "^30.0.0",
+		"autoprefixer": "^10.4.16",
+		"npm-watch": "^0.13.0",
+		"postcss": "^8.4.33",
+		"postcss-cli": "^11.0.0",
+		"sass": "^1.83.0"
+	},
+	"watch": {
+		"build:js": {
+			"extensions": "js",
+			"patterns": [
+				"src/js"
+			]
+		},
+		"build:css": {
+			"extensions": "scss",
+			"patterns": [
+				"src/scss"
+			]
+		},
+		"build:blocks": {
+			"extensions": "js,scss,php,json",
+			"patterns": [
+				"src/blocks"
+			]
+		},
+		"dump": {
+			"extensions": "js,css",
+			"patterns": [
+				"assets/js",
+				"assets/css"
+			]
+		}
+	},
+	"volta": {
+		"node": "22.12.0"
+	}
 }

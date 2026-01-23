@@ -5,6 +5,8 @@
 .gitignore
 .gitlab-ci.yml
 .travis.yml
+.github
+.wp-env.json
 .DS_Store
 Thumbs.db
 behat.yml
@@ -28,6 +30,10 @@ yarn.lock
 tests
 gulpfile.js
 node_modules
+src
+.stylelintrc.json
 *.sql
 *.tar.gz
 *.zip
+hamelp.php.bak
+readme.txt.bak

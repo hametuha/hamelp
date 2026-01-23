@@ -84,7 +84,7 @@ abstract class ShortCode extends Singleton {
 	/**
 	 * Attributes for shortcode.
 	 *
-	 * @return array
+	 * @return array{ attr:string, label:string, type:string, default:string }[]
 	 */
 	protected function get_code_attributes() {
 		return [];

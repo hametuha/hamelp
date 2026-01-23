@@ -8,3 +8,4 @@ package-lock.json
 *.tar.gz
 *.zip
 /vendor/
+wp-dependencies.json

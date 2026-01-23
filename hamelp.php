@@ -15,9 +15,9 @@
 // Do not load directory.
 defined( 'ABSPATH' ) || die();
 
-// Check version and load plugin if possible.
-add_action( 'plugins_loaded', 'hamelp_init' );
-
+/**
+ * Check version and load plugin if possible.
+ */
 function hamelp_init() {
 	// i18n.
 	load_plugin_textdomain( 'hamelp', false, basename( dirname( __FILE__ ) ) . '/languages' );
@@ -28,6 +28,44 @@ function hamelp_init() {
 		add_action( 'admin_notices', 'hamelp_version_error' );
 	}
 }
+add_action( 'plugins_loaded', 'hamelp_init' );
+
+
+/**
+ * Register all file in wp-dependencies.json
+ *
+ * @return void
+ */
+function hamelp_register_assets() {
+	$path = __DIR__ . '/wp-dependencies.json';
+	if ( ! file_exists( $path ) ) {
+		return;
+	}
+	$deps = json_decode( file_get_contents( $path ), true );
+	if ( empty( $deps ) ) {
+		return;
+	}
+	// Register all assets in json
+	foreach ( $deps as $dep ) {
+		if ( empty( $dep['path'] ) ) {
+			continue;
+		}
+		$url = plugin_dir_url( __DIR__ . '/assets' ) . $dep['path'];
+		switch ( $dep['ext'] ) {
+			case 'css':
+				wp_register_style( $dep['handle'], $url, $dep['deps'], $dep['hash'], $dep['screen'] );
+				break;
+			case 'js':
+				$footer = [ 'in_footer' => $dep['footer'] ];
+				if ( in_array( $dep['strategy'], [ 'defer', 'async' ], true ) ) {
+					$footer['strategy'] = $dep['strategy'];
+				}
+				wp_register_script( $dep['handle'], $url, $dep['deps'], $dep['hash'], $footer );
+				break;
+		}
+	}
+}
+add_action( 'init', 'hamelp_register_assets' );
 
 /**
  * Display version error

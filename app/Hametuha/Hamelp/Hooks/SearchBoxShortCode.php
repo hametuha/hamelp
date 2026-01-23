@@ -16,28 +16,7 @@ class SearchBoxShortCode extends ShortCode {
 
 	protected $dashicons = 'dashicons-search';
 
-	/**
-	 * Do something in constructor.
-	 */
-	protected function init() {
-		parent::init();
-		add_action( 'init', function() {
-			wp_register_style( 'hamelp-incsearch', hamelp_asset_url() . '/css/incsearch.css', [], hamelp_version() );
-			wp_register_script( 'hamelp-incsearch', hamelp_asset_url() . '/js/incsearch.js', ['jquery'], hamelp_version(), true );
-			wp_localize_script( 'hamelp-incsearch', 'HamelpIncSearch', [
-				'endpoint' => rest_url( '/wp/v2/faq' ),
-				'found'    => __( 'Found Posts:', 'hamelp' ),
-				'notFound' => __( 'No posts found. Please change the query.', 'hamelp' ),
-			] );
-			add_filter( 'script_loader_tag', function( $tag, $handle ) {
-				if ( 'hamelp-incsearch' !== $handle ) {
-					return $tag;
-				}
-				return str_replace( ' src=', 'defer src=', $tag );
-			}, 10, 2 );
-		} );
-	}
-
+	protected static $rendered = false;
 
 	/**
 	 * Return label for this shortcode.
@@ -47,7 +26,6 @@ class SearchBoxShortCode extends ShortCode {
 	protected function get_label() {
 		return __( 'FAQ Search Box', 'hamelp' );
 	}
-
 
 	/**
 	 * Render shortcode content
@@ -65,8 +43,16 @@ class SearchBoxShortCode extends ShortCode {
 		}, array_keys( PostType::get()->get_post_types() ) ) );
 		$query    = get_search_query();
 		$action   = esc_url( apply_filters( 'hamelp_endpoint', home_url( '' ) ) );
-		wp_enqueue_script( 'hamelp-incsearch' );
-		wp_enqueue_style( 'hamelp-incsearch' );
+		if ( ! self::$rendered ) {
+			wp_enqueue_script( 'hamelp-incsearch' );
+			wp_enqueue_style( 'hamelp-incsearch' );
+			wp_localize_script( 'hamelp-incsearch', 'HamelpIncSearch', [
+				'endpoint' => rest_url( '/wp/v2/faq' ),
+				'found'    => __( 'Found Posts:', 'hamelp' ),
+				'notFound' => __( 'No posts found. Please change the query.', 'hamelp' ),
+			] );
+			self::$rendered = true;
+		}
 		$html = <<<HTML
 			<form class="hamelp-search-box" action="{$action}">
 				{$post_types}
@@ -78,7 +64,7 @@ class SearchBoxShortCode extends ShortCode {
     			</div><!-- /input-group -->
     			<div class="hamelp-result-wrapper input-result">
     				<div class="hamelp-result list-group">
-					</div>	
+					</div>
 				</div>
 			</form>
 HTML;
@@ -86,9 +72,7 @@ HTML;
 	}
 
 	/**
-	 *
-	 *
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	protected function get_code_attributes() {
 		return [
