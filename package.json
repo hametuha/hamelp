@@ -14,7 +14,8 @@
 		"fix:css": "wp-scripts lint-style --fix './src/scss/**/*.scss' './src/blocks/**/*.scss'",
 		"lint": "npm run lint:css && npm run lint:js",
 		"lint:css": "wp-scripts lint-style './src/scss/**/*.scss'",
-		"lint:js": "wp-scripts lint-js './src/js/**/*.js'"
+		"lint:js": "wp-scripts lint-js './src/js/**/*.js'",
+		"prepare": "husky"
 	},
 	"engines": {
 		"node": ">=22.0"
@@ -33,6 +34,8 @@
 		"@kunoichi/grab-deps": "^3.0.0",
 		"@wordpress/scripts": "^30.0.0",
 		"autoprefixer": "^10.4.16",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
 		"npm-watch": "^0.13.0",
 		"postcss": "^8.4.33",
 		"postcss-cli": "^11.0.0",
@@ -67,5 +70,11 @@
 	},
 	"volta": {
 		"node": "22.12.0"
+	},
+	"lint-staged": {
+		"src/**/*.js": "npm run lint:js",
+		"src/**/*.scss": "npm run lint:css",
+		"*.php": "composer lint",
+		"app/**/*.php": "composer lint"
 	}
 }
