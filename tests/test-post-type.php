@@ -18,7 +18,7 @@ class PostTypeTest extends WP_UnitTestCase {
 	/**
 	 * Override setupper
 	 */
-	public function setUp() {
+	public function setUp():void {
 		parent::setUp();
 		$this->post_type = \Hametuha\Hamelp\Hooks\PostType::get();
 	}
