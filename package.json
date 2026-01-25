@@ -11,7 +11,7 @@
 		"env": "wp-env",
 		"cli": "wp-env run cli wp",
 		"cli:test": "wp-env run tests-cli wp",
-		"package": "npm run build:css && npm run build:js && npm run dump",
+		"package": "npm run build:css && npm run build:js && npm run build:blocks && npm run dump",
 		"watch": "npm-watch",
 		"build:css": "sass ./src/scss/:./assets/css/ --style=compressed && postcss ./assets/css/*.css --use autoprefixer --replace",
 		"build:js": "grab-deps js src/js assets/js",
@@ -21,8 +21,8 @@
 		"fix:js": "wp-scripts lint-js --fix './src/js/**/*.js' './src/blocks/**/*.js'",
 		"fix:css": "wp-scripts lint-style --fix './src/scss/**/*.scss' './src/blocks/**/*.scss'",
 		"lint": "npm run lint:css && npm run lint:js",
-		"lint:css": "wp-scripts lint-style './src/scss/**/*.scss'",
-		"lint:js": "wp-scripts lint-js './src/js/**/*.js'",
+		"lint:css": "wp-scripts lint-style './src/scss/**/*.scss' './src/blocks/**/*.scss'",
+		"lint:js": "wp-scripts lint-js './src/js/**/*.js' './src/blocks/**/*.js'",
 		"prepare": "husky"
 	},
 	"engines": {

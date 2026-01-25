@@ -118,3 +118,25 @@ function hamelp_get_accessibility( $post = null ) {
 	$post = get_post( $post );
 	return (string) get_post_meta( $post->ID, '_accessibility', true );
 }
+
+/**
+ * Register all blocks in assets/blocks directory.
+ *
+ * @return void
+ */
+function hamelp_register_blocks() {
+	$blocks_dir = __DIR__ . '/assets/blocks';
+	if ( ! is_dir( $blocks_dir ) ) {
+		return;
+	}
+	foreach ( scandir( $blocks_dir ) as $block_name ) {
+		if ( '.' === $block_name[0] ) {
+			continue;
+		}
+		$block_path = $blocks_dir . '/' . $block_name;
+		if ( is_dir( $block_path ) && file_exists( $block_path . '/block.json' ) ) {
+			register_block_type( $block_path );
+		}
+	}
+}
+add_action( 'init', 'hamelp_register_blocks' );

@@ -9,3 +9,4 @@ composer.lock
 *.zip
 /vendor/
 wp-dependencies.json
+tmp/

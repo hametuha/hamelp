@@ -1,0 +1,32 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "hamelp/ai-overview",
+	"title": "AI FAQ Overview",
+	"category": "widgets",
+	"icon": "format-chat",
+	"description": "AI-powered FAQ search that answers user questions based on FAQ content.",
+	"textdomain": "hamelp",
+	"attributes": {
+		"placeholder": {
+			"type": "string",
+			"default": "Enter your question..."
+		},
+		"buttonText": {
+			"type": "string",
+			"default": "Ask AI"
+		},
+		"showSources": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ]
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"viewScript": "file:./view.js"
+}
