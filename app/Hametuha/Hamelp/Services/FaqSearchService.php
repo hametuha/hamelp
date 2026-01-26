@@ -7,6 +7,7 @@
 
 namespace Hametuha\Hamelp\Services;
 
+use Hametuha\Hamelp\Hooks\Settings;
 use WordPress\AI_Client\AI_Client;
 
 /**
@@ -136,11 +137,11 @@ class FaqSearchService {
 	 * @return string System prompt.
 	 */
 	protected function get_system_prompt( string $context ): string {
-		$site_context = get_option( 'hamelp_ai_context', '' );
+		$site_context = Settings::get_site_context();
 
 		$base = 'You are a FAQ support assistant.';
 		if ( ! empty( $site_context ) ) {
-			$base .= ' ' . trim( $site_context );
+			$base .= "\n\n" . $site_context;
 		}
 
 		$base .= "\n\n" . 'Answer user questions based on the provided FAQ content.
