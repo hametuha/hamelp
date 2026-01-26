@@ -1,23 +1,22 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Hamelp\n"
-"POT-Creation-Date: 2018-08-06 14:49+0900\n"
+"POT-Creation-Date: 2026-01-26 18:16+0900\n"
 "PO-Revision-Date: 2018-07-31 17:54+0900\n"
 "Last-Translator: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
 "Language-Team: Takahashi Fumiki <takahashi.fumiki@hametuha.co.jp>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.6\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: Poedit 3.8\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: hamelp.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
-"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-KeywordsList: "
+"__;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 "X-Poedit-SearchPathExcluded-1: node_modules\n"
@@ -25,80 +24,255 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-3: *.css\n"
 "X-Poedit-SearchPathExcluded-4: *.scss\n"
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:26
+#: app/Hametuha/Hamelp/Commands.php:27
+msgid "Rebuilding FAQ catalog..."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Commands.php:33
+#, php-format
+msgid "FAQ catalog rebuilt. %d entries."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Commands.php:56
+#, php-format
+msgid "Catalog entries: %d"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Commands.php:66
+#, php-format
+msgid "Last updated: %s"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Commands.php:71
+msgid "Catalog has never been built. Run \"wp hamelp rebuild\"."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/AiOverview.php:66
+msgid "You must be logged in to use this feature."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/AiOverview.php:100
+#: app/Hametuha/Hamelp/Hooks/AiOverview.php:121
+msgid "Too many requests. Please try again later."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/AiOverview.php:186
+msgid "AI feature is not configured."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/PostType.php:33
 msgid "Access"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:79
+#: app/Hametuha/Hamelp/Hooks/PostType.php:112
 msgid "FAQ Category"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:108
+#: app/Hametuha/Hamelp/Hooks/PostType.php:144
 msgid "FAQ"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:194
+#: app/Hametuha/Hamelp/Hooks/PostType.php:233
 msgid "You can limit access to this post."
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:214
+#: app/Hametuha/Hamelp/Hooks/PostType.php:254
 msgid "Not restricted"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/PostType.php:279
+#: app/Hametuha/Hamelp/Hooks/PostType.php:309
 #, php-format
 msgid ""
 "This %1$s is restricted and accessible only for %2$s. If you are not "
-"logged in please <a href=\"%3$s\" class=\"alert-link\" rel=\"nofollow"
-"\">log in</a>."
+"logged in please <a href=\"%3$s\" class=\"alert-link\" "
+"rel=\"nofollow\">log in</a>."
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:29
-msgid "Found Posts:"
-msgstr ""
-
-#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:30
-msgid "No posts found. Please change the query."
-msgstr ""
-
-#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:48
+#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:41
 msgid "FAQ Search Box"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:97
+#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:73
+msgid "Found Posts:"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:74
+msgid "No posts found. Please change the query."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:102
 msgid "Label"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:99
+#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:104
 msgid "Enter keyword and hit search."
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:103
+#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:108
 msgid "Button Text"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:105
+#: app/Hametuha/Hamelp/Hooks/SearchBoxShortCode.php:110
 msgid "Search"
 msgstr ""
 
-#: app/Hametuha/Hamelp/Pattern/ShortCode.php:106
+#: app/Hametuha/Hamelp/Hooks/Settings.php:58
+#: app/Hametuha/Hamelp/Hooks/Settings.php:228
+msgid "Hamelp Settings"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+#: app/Hametuha/Hamelp/Hooks/Settings.php:59
+msgid "Hamelp"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:74
+msgid "Site Description"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:75
+msgid "What is this site? What does it do?"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:76
+msgid "e.g., This is a fiction publishing platform called \"Hametuha\"."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:80
+msgid "Target Users"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:81
+msgid "Who are the people likely asking questions?"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:82
+msgid "e.g., Writers who publish novels, or readers."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:86
+msgid "Response Tone"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:87
+msgid "How should the AI respond?"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:88
+msgid "e.g., Polite and friendly."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:92
+msgid "Notes"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:93
+msgid "Anything the AI should avoid or keep in mind?"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:94
+msgid "e.g., Do not give legal advice. Do not recommend competing services."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:108
+msgid "Per IP Limit"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:109
+msgid "Maximum requests per IP within the time window."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:115
+msgid "Time Window (minutes)"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:116
+msgid "Time window for per-IP rate limiting."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:122
+msgid "Daily Global Limit"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:123
+msgid "Maximum total requests per day across all users."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:129
+msgid "Require Login"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:130
+msgid "Only allow logged-in users to use AI Overview."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:158
+msgid "AI Overview"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:198
+msgid "Rate Limiting"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:246
+msgid ""
+"These settings help the AI generate more accurate answers to FAQ questions."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:256
+msgid ""
+"Protect the AI Overview endpoint from excessive usage. Each request costs "
+"LLM tokens."
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:325
+#, php-format
+msgid "About this site: %s"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:326
+#, php-format
+msgid "Target users: %s"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:327
+#, php-format
+msgid "Response tone: %s"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Hooks/Settings.php:328
+#, php-format
+msgid "Important notes: %s"
+msgstr ""
+
+#: app/Hametuha/Hamelp/Pattern/ShortCode.php:120
 #, php-format
 msgid "Default value is \"%s\"."
 msgstr ""
 
-#: hamelp.php:39
+#: app/Hametuha/Hamelp/Services/FaqSearchService.php:34
+msgid "No FAQ content is available at this time."
+msgstr ""
+
+#: assets/blocks/ai-overview/render.php:22 hamelp.php:163
+#: src/blocks/ai-overview/render.php:22
+msgid "Enter your question..."
+msgstr ""
+
+#: assets/blocks/ai-overview/render.php:23 hamelp.php:164
+#: src/blocks/ai-overview/render.php:23
+msgid "Ask AI"
+msgstr ""
+
+#: hamelp.php:81
 #, php-format
 msgid ""
 "Hamelp requires PHP %1$s, but your PHP version is %2$s. Please consider "
 "upgrade."
 msgstr ""
 
-#. Plugin Name of the plugin/theme
-msgid "Hamelp"
-msgstr ""
-
 #. Plugin URI of the plugin/theme
-msgid "https://wordpress.org/extend/plugins/hamelp"
+msgid "https://wordpress.org/plugins/hamelp"
 msgstr ""
 
 #. Description of the plugin/theme
@@ -106,9 +280,9 @@ msgid "FAQ generator by Hametuha."
 msgstr ""
 
 #. Author of the plugin/theme
-msgid "Takahashi_Fumiki"
+msgid "Hametuha INC."
 msgstr ""
 
 #. Author URI of the plugin/theme
-msgid "https://takahashifumiki.com"
+msgid "https://hametuha.co.jp"
 msgstr ""

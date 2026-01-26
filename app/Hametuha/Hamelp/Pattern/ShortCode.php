@@ -35,7 +35,6 @@ abstract class ShortCode extends Singleton {
 	 */
 	protected function init() {
 		add_shortcode( $this->get_code(), [ $this, 'prepare_rendering' ] );
-		add_action( 'register_shortcode_ui', [ $this, 'register_shortcode_ui' ] );
 	}
 
 	/**
@@ -120,13 +119,6 @@ abstract class ShortCode extends Singleton {
 		}
 		$attr['description'] = sprintf( __( 'Default value is "%s".', 'hamelp' ), $attr['default'] );
 		return $attr;
-	}
-
-	/**
-	 * Register short code content
-	 */
-	public function register_shortcode_ui() {
-		shortcode_ui_register_for_shortcode( $this->get_code(), $this->get_code_setting() );
 	}
 
 	/**
