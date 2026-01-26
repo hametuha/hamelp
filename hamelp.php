@@ -4,8 +4,8 @@
  * Plugin URI:      https://wordpress.org/plugins/hamelp
  * Description:     FAQ generator by Hametuha.
  * Version:         1.0.4
- * Author:          Takahashi Fumiki
- * Author URI:      https://takahashifumiki.com
+ * Author:          Hametuha INC.
+ * Author URI:      https://hametuha.co.jp
  * Text Domain:     hamelp
  * Domain Path:     /languages
  * Requires at least: 6.6
@@ -57,7 +57,7 @@ function hamelp_register_assets() {
 		$url = plugin_dir_url( __DIR__ . '/assets' ) . $dep['path'];
 		switch ( $dep['ext'] ) {
 			case 'css':
-				wp_register_style( $dep['handle'], $url, $dep['deps'], $dep['hash'], $dep['screen'] );
+				wp_register_style( $dep['handle'], $url, $dep['deps'], $dep['hash'], $dep['media'] );
 				break;
 			case 'js':
 				$footer = [ 'in_footer' => $dep['footer'] ];
@@ -117,4 +117,85 @@ function hamelp_version() {
 function hamelp_get_accessibility( $post = null ) {
 	$post = get_post( $post );
 	return (string) get_post_meta( $post->ID, '_accessibility', true );
+}
+
+/**
+ * Register all blocks in assets/blocks directory.
+ *
+ * @return void
+ */
+function hamelp_register_blocks() {
+	$blocks_dir = __DIR__ . '/assets/blocks';
+	if ( ! is_dir( $blocks_dir ) ) {
+		return;
+	}
+	foreach ( scandir( $blocks_dir ) as $block_name ) {
+		if ( '.' === $block_name[0] ) {
+			continue;
+		}
+		$block_path = $blocks_dir . '/' . $block_name;
+		if ( is_dir( $block_path ) && file_exists( $block_path . '/block.json' ) ) {
+			register_block_type( $block_path );
+		}
+	}
+}
+add_action( 'init', 'hamelp_register_blocks' );
+
+/**
+ * Render AI Overview widget.
+ *
+ * Use this in theme templates to output the AI FAQ search form.
+ *
+ * @param array $args {
+ *     Optional. Widget arguments.
+ *
+ *     @type string $placeholder   Input placeholder text. Default 'Enter your question...'.
+ *     @type string $button_text   Submit button text. Default 'Ask AI'.
+ *     @type bool   $show_sources  Whether to show source FAQ links. Default true.
+ *     @type string $wrapper_attrs Pre-built wrapper attributes string (used internally by block render).
+ * }
+ * @return string HTML output.
+ */
+function hamelp_render_ai_overview( $args = [] ) {
+	$args = wp_parse_args(
+		$args,
+		[
+			'placeholder'   => __( 'Enter your question...', 'hamelp' ),
+			'button_text'   => __( 'Ask AI', 'hamelp' ),
+			'show_sources'  => true,
+			'wrapper_attrs' => '',
+		]
+	);
+
+	// Enqueue block assets.
+	$block_type = WP_Block_Type_Registry::get_instance()->get_registered( 'hamelp/ai-overview' );
+	if ( $block_type ) {
+		foreach ( $block_type->view_script_handles as $handle ) {
+			wp_enqueue_script( $handle );
+		}
+		foreach ( $block_type->style_handles as $handle ) {
+			wp_enqueue_style( $handle );
+		}
+	}
+
+	// Build wrapper attributes if not provided (non-block context).
+	if ( empty( $args['wrapper_attrs'] ) ) {
+		$args['wrapper_attrs'] = sprintf(
+			'class="hamelp-ai-overview" data-show-sources="%s"',
+			$args['show_sources'] ? 'true' : 'false'
+		);
+	}
+
+	return sprintf(
+		'<div %s>
+	<form class="hamelp-ai-overview__form">
+		<input type="text" class="hamelp-ai-overview__input" placeholder="%s" required />
+		<button type="submit" class="hamelp-ai-overview__button">%s</button>
+	</form>
+	<div class="hamelp-ai-overview__result" aria-live="polite"></div>
+</div>',
+		$args['wrapper_attrs'],
+		esc_attr( $args['placeholder'] ),
+		esc_html( $args['button_text'] )
+	);
 }

@@ -81,12 +81,10 @@ class SearchBoxShortCode extends ShortCode {
 				{$post_types}
 				<div class="input-group">
 					<input type="search" class="form-control hamelp-search-input" name="s" placeholder="{$place_holder}" value="{$query}" />
-      				<span class="input-group-btn">
-        				<button class="btn btn-secondary hamelp-search-button" type="submit">{$button_label}</button>
-      				</span>
-    			</div><!-- /input-group -->
-    			<div class="hamelp-result-wrapper input-result">
-    				<div class="hamelp-result list-group">
+					<button class="btn btn-secondary hamelp-search-button" type="submit">{$button_label}</button>
+				</div>
+				<div class="hamelp-result-wrapper">
+					<div class="hamelp-result list-group">
 					</div>
 				</div>
 			</form>
