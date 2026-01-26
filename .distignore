@@ -32,7 +32,6 @@ yarn.lock
 tests
 gulpfile.js
 node_modules
-src
 .stylelintrc.json
 *.sql
 *.tar.gz
