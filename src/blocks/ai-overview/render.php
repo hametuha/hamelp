@@ -8,8 +8,6 @@
  * @var WP_Block $block      Block instance.
  */
 
-$placeholder  = esc_attr( $attributes['placeholder'] ?? __( 'Enter your question...', 'hamelp' ) );
-$button_text  = esc_html( $attributes['buttonText'] ?? __( 'Ask AI', 'hamelp' ) );
 $show_sources = ! empty( $attributes['showSources'] ) ? 'true' : 'false';
 
 $wrapper_attributes = get_block_wrapper_attributes(
@@ -18,18 +16,12 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		'data-show-sources' => $show_sources,
 	]
 );
-?>
-<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<form class="hamelp-ai-overview__form">
-		<input
-			type="text"
-			class="hamelp-ai-overview__input"
-			placeholder="<?php echo $placeholder; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"
-			required
-		/>
-		<button type="submit" class="hamelp-ai-overview__button">
-			<?php echo $button_text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-		</button>
-	</form>
-	<div class="hamelp-ai-overview__result" aria-live="polite"></div>
-</div>
+
+echo hamelp_render_ai_overview( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	[
+		'placeholder'   => $attributes['placeholder'] ?? __( 'Enter your question...', 'hamelp' ),
+		'button_text'   => $attributes['buttonText'] ?? __( 'Ask AI', 'hamelp' ),
+		'show_sources'  => ! empty( $attributes['showSources'] ),
+		'wrapper_attrs' => $wrapper_attributes,
+	]
+);
