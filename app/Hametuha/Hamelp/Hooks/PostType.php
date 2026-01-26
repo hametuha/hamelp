@@ -3,6 +3,7 @@
 namespace Hametuha\Hamelp\Hooks;
 
 use Hametuha\Hamelp\Pattern\Singleton;
+use Hametuha\Hamelp\Services\FaqCatalogBuilder;
 
 /**
  * Post type handler
@@ -36,6 +37,28 @@ class PostType extends Singleton {
 		);
 		add_filter( 'the_content', [ $this, 'restrict_content' ], 20 );
 		add_action( 'current_screen', [ $this, 'flush_rules' ] );
+		// Register cron hook for background catalog rebuild.
+		FaqCatalogBuilder::register_cron();
+		// Schedule catalog rebuild on FAQ content changes.
+		add_action( 'save_post_faq', [ FaqCatalogBuilder::class, 'schedule_rebuild' ] );
+		add_action(
+			'delete_post',
+			function ( $post_id ) {
+				if ( $this->is_supported( get_post_type( $post_id ) ) ) {
+					FaqCatalogBuilder::schedule_rebuild();
+				}
+			}
+		);
+		add_action(
+			'set_object_terms',
+			function ( $object_id, $terms, $tt_ids, $taxonomy ) {
+				if ( $this->taxonomy === $taxonomy ) {
+					FaqCatalogBuilder::schedule_rebuild();
+				}
+			},
+			10,
+			4
+		);
 	}
 
 	/**

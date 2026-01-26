@@ -57,7 +57,7 @@ function hamelp_register_assets() {
 		$url = plugin_dir_url( __DIR__ . '/assets' ) . $dep['path'];
 		switch ( $dep['ext'] ) {
 			case 'css':
-				wp_register_style( $dep['handle'], $url, $dep['deps'], $dep['hash'], $dep['screen'] );
+				wp_register_style( $dep['handle'], $url, $dep['deps'], $dep['hash'], $dep['media'] );
 				break;
 			case 'js':
 				$footer = [ 'in_footer' => $dep['footer'] ];

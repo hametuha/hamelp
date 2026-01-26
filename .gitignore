@@ -10,3 +10,4 @@ composer.lock
 /vendor/
 wp-dependencies.json
 tmp/
+.claude/settings.local.json

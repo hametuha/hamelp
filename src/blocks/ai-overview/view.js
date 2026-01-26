@@ -99,6 +99,30 @@ function parseMarkdown( text ) {
 	return processedParagraphs.filter( ( p ) => p ).join( '' );
 }
 
+/**
+ * Replace [ID:xxx] references in HTML with linked source indices.
+ *
+ * @param {string} html    Parsed HTML string.
+ * @param {Array}  sources Array of { id, title, url } objects.
+ * @return {string} HTML with references replaced by links.
+ */
+function replaceIdReferences( html, sources ) {
+	if ( ! sources?.length ) {
+		return html;
+	}
+	const sourceMap = {};
+	sources.forEach( ( source, i ) => {
+		sourceMap[ source.id ] = { ...source, index: i + 1 };
+	} );
+	return html.replace( /\[ID:(\d+)\]/g, ( match, id ) => {
+		const source = sourceMap[ parseInt( id, 10 ) ];
+		if ( source ) {
+			return `<a href="${ source.url }" class="hamelp-ai-overview__ref" title="${ source.title }">(Ref. ${ source.index })</a>`;
+		}
+		return match;
+	} );
+}
+
 document.querySelectorAll( '.hamelp-ai-overview' ).forEach( ( container ) => {
 	const form = container.querySelector( 'form' );
 	const input = container.querySelector( 'input' );
@@ -125,8 +149,11 @@ document.querySelectorAll( '.hamelp-ai-overview' ).forEach( ( container ) => {
 				data: { query },
 			} );
 
-			// Parse markdown in the answer
-			const parsedAnswer = parseMarkdown( data.answer );
+			// Parse markdown, then replace [ID:xxx] with source links.
+			const parsedAnswer = replaceIdReferences(
+				parseMarkdown( data.answer ),
+				data.sources
+			);
 			let html = `<div class="hamelp-ai-overview__answer">${ parsedAnswer }</div>`;
 
 			if ( showSources && data.sources?.length ) {

@@ -30,5 +30,9 @@ class Hamelp extends Singleton {
 				}
 			}
 		}
+		// Register WP-CLI commands.
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			\WP_CLI::add_command( 'hamelp', Hamelp\Commands::class );
+		}
 	}
 }
