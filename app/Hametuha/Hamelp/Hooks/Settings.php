@@ -36,6 +36,13 @@ class Settings extends Singleton {
 	const OPTION_PREFIX = 'hamelp_ai_';
 
 	/**
+	 * Option prefix for rate limiting settings.
+	 *
+	 * @var string
+	 */
+	const RATE_PREFIX = 'hamelp_rate_';
+
+	/**
 	 * Initialize hooks.
 	 */
 	protected function init() {
@@ -91,11 +98,48 @@ class Settings extends Singleton {
 	}
 
 	/**
+	 * Get rate limiting field definitions.
+	 *
+	 * @return array[] Field definitions keyed by option suffix.
+	 */
+	protected function get_rate_fields(): array {
+		return [
+			'per_ip'        => [
+				'label'       => __( 'Per IP Limit', 'hamelp' ),
+				'description' => __( 'Maximum requests per IP within the time window.', 'hamelp' ),
+				'type'        => 'number',
+				'default'     => 5,
+				'min'         => 1,
+			],
+			'window'        => [
+				'label'       => __( 'Time Window (minutes)', 'hamelp' ),
+				'description' => __( 'Time window for per-IP rate limiting.', 'hamelp' ),
+				'type'        => 'number',
+				'default'     => 10,
+				'min'         => 1,
+			],
+			'daily'         => [
+				'label'       => __( 'Daily Global Limit', 'hamelp' ),
+				'description' => __( 'Maximum total requests per day across all users.', 'hamelp' ),
+				'type'        => 'number',
+				'default'     => 100,
+				'min'         => 1,
+			],
+			'require_login' => [
+				'label'       => __( 'Require Login', 'hamelp' ),
+				'description' => __( 'Only allow logged-in users to use AI Overview.', 'hamelp' ),
+				'type'        => 'checkbox',
+				'default'     => '',
+			],
+		];
+	}
+
+	/**
 	 * Register settings and fields.
 	 */
 	public function register_settings() {
+		// AI Overview fields.
 		$fields = $this->get_ai_fields();
-
 		foreach ( $fields as $suffix => $field ) {
 			$option_name = self::OPTION_PREFIX . $suffix;
 			register_setting(
@@ -132,6 +176,47 @@ class Settings extends Singleton {
 				]
 			);
 		}
+
+		// Rate limiting fields.
+		$rate_fields = $this->get_rate_fields();
+		foreach ( $rate_fields as $suffix => $field ) {
+			$option_name = self::RATE_PREFIX . $suffix;
+			$is_number   = 'number' === $field['type'];
+			register_setting(
+				self::OPTION_GROUP,
+				$option_name,
+				[
+					'type'              => $is_number ? 'integer' : 'string',
+					'sanitize_callback' => $is_number ? 'absint' : 'sanitize_text_field',
+					'default'           => $field['default'],
+				]
+			);
+		}
+
+		add_settings_section(
+			'hamelp_rate_section',
+			__( 'Rate Limiting', 'hamelp' ),
+			[ $this, 'render_rate_section' ],
+			self::PAGE_SLUG
+		);
+
+		foreach ( $rate_fields as $suffix => $field ) {
+			$option_name = self::RATE_PREFIX . $suffix;
+			$renderer    = 'checkbox' === $field['type'] ? 'render_checkbox' : 'render_number';
+			add_settings_field(
+				$option_name,
+				$field['label'],
+				[ $this, $renderer ],
+				self::PAGE_SLUG,
+				'hamelp_rate_section',
+				[
+					'option_name' => $option_name,
+					'description' => $field['description'],
+					'default'     => $field['default'],
+					'min'         => $field['min'] ?? null,
+				]
+			);
+		}
 	}
 
 	/**
@@ -163,6 +248,16 @@ class Settings extends Singleton {
 	}
 
 	/**
+	 * Render rate limiting section description.
+	 */
+	public function render_rate_section() {
+		printf(
+			'<p>%s</p>',
+			esc_html__( 'Protect the AI Overview endpoint from excessive usage. Each request costs LLM tokens.', 'hamelp' )
+		);
+	}
+
+	/**
 	 * Render a textarea field.
 	 *
 	 * @param array $args Field arguments.
@@ -179,6 +274,43 @@ class Settings extends Singleton {
 		);
 		printf(
 			'<p class="description">%s</p>',
+			esc_html( $args['description'] )
+		);
+	}
+
+	/**
+	 * Render a number input field.
+	 *
+	 * @param array $args Field arguments.
+	 */
+	public function render_number( array $args ) {
+		$value = get_option( $args['option_name'], $args['default'] );
+		$min   = isset( $args['min'] ) ? sprintf( ' min="%d"', (int) $args['min'] ) : '';
+		printf(
+			'<input type="number" name="%s" id="%s" value="%d" class="small-text"%s />',
+			esc_attr( $args['option_name'] ),
+			esc_attr( $args['option_name'] ),
+			(int) $value,
+			$min // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		);
+		printf(
+			'<p class="description">%s</p>',
+			esc_html( $args['description'] )
+		);
+	}
+
+	/**
+	 * Render a checkbox field.
+	 *
+	 * @param array $args Field arguments.
+	 */
+	public function render_checkbox( array $args ) {
+		$value = get_option( $args['option_name'], '' );
+		printf(
+			'<label><input type="checkbox" name="%s" id="%s" value="1" %s /> %s</label>',
+			esc_attr( $args['option_name'] ),
+			esc_attr( $args['option_name'] ),
+			checked( $value, '1', false ),
 			esc_html( $args['description'] )
 		);
 	}

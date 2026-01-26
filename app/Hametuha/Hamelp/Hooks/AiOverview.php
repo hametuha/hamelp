@@ -39,7 +39,7 @@ class AiOverview extends Singleton {
 			[
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'handle_request' ],
-				'permission_callback' => '__return_true', // Public FAQ
+				'permission_callback' => [ $this, 'check_permission' ],
 				'args'                => [
 					'query' => [
 						'required'          => true,
@@ -49,6 +49,124 @@ class AiOverview extends Singleton {
 				],
 			]
 		);
+	}
+
+	/**
+	 * Check permission including rate limits.
+	 *
+	 * @param \WP_REST_Request $request REST request.
+	 * @return true|\WP_Error
+	 */
+	public function check_permission( \WP_REST_Request $request ) {
+		// 1. Login required check.
+		$require_login = (bool) apply_filters( 'hamelp_ai_overview_require_login', get_option( 'hamelp_rate_require_login', '' ) );
+		if ( $require_login && ! is_user_logged_in() ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'You must be logged in to use this feature.', 'hamelp' ),
+				[ 'status' => 403 ]
+			);
+		}
+
+		// 2. Per-IP rate limit.
+		$ip_result = $this->check_ip_rate_limit();
+		if ( is_wp_error( $ip_result ) ) {
+			return $ip_result;
+		}
+
+		// 3. Global daily limit.
+		$global_result = $this->check_global_rate_limit();
+		if ( is_wp_error( $global_result ) ) {
+			return $global_result;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check per-IP rate limit.
+	 *
+	 * @return true|\WP_Error
+	 */
+	protected function check_ip_rate_limit() {
+		$per_ip = (int) apply_filters( 'hamelp_rate_limit_per_ip', get_option( 'hamelp_rate_per_ip', 5 ) );
+		$ip     = $this->get_client_ip();
+		$key    = 'hamelp_rate_' . md5( $ip );
+		$count  = (int) get_transient( $key );
+
+		if ( $count >= $per_ip ) {
+			return new \WP_Error(
+				'rate_limit_exceeded',
+				__( 'Too many requests. Please try again later.', 'hamelp' ),
+				[ 'status' => 429 ]
+			);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check global daily rate limit.
+	 *
+	 * @return true|\WP_Error
+	 */
+	protected function check_global_rate_limit() {
+		$daily = (int) apply_filters( 'hamelp_rate_limit_daily', get_option( 'hamelp_rate_daily', 100 ) );
+		$key   = 'hamelp_rate_global_' . gmdate( 'Y-m-d' );
+		$count = (int) get_transient( $key );
+
+		if ( $count >= $daily ) {
+			return new \WP_Error(
+				'rate_limit_exceeded',
+				__( 'Too many requests. Please try again later.', 'hamelp' ),
+				[ 'status' => 429 ]
+			);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Increment rate limit counters after successful AI call.
+	 */
+	protected function increment_rate_counters() {
+		$window = (int) apply_filters( 'hamelp_rate_limit_window', get_option( 'hamelp_rate_window', 10 ) );
+
+		// Per-IP counter.
+		$ip      = $this->get_client_ip();
+		$ip_key  = 'hamelp_rate_' . md5( $ip );
+		$current = (int) get_transient( $ip_key );
+		set_transient( $ip_key, $current + 1, $window * MINUTE_IN_SECONDS );
+
+		// Global daily counter.
+		$global_key     = 'hamelp_rate_global_' . gmdate( 'Y-m-d' );
+		$global_current = (int) get_transient( $global_key );
+		$seconds_left   = strtotime( 'tomorrow' ) - time();
+		set_transient( $global_key, $global_current + 1, max( $seconds_left, 1 ) );
+	}
+
+	/**
+	 * Get client IP address.
+	 *
+	 * @return string
+	 */
+	protected function get_client_ip(): string {
+		$headers = [
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_REAL_IP',
+			'REMOTE_ADDR',
+		];
+		foreach ( $headers as $header ) {
+			if ( ! empty( $_SERVER[ $header ] ) ) {
+				// X-Forwarded-For may contain multiple IPs; take the first.
+				$ip = strtok( $_SERVER[ $header ], ',' );
+				$ip = trim( $ip );
+				if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+					return $ip;
+				}
+			}
+		}
+		return '0.0.0.0';
 	}
 
 	/**
@@ -76,6 +194,9 @@ class AiOverview extends Singleton {
 		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
+
+		// Increment rate counters on successful AI call.
+		$this->increment_rate_counters();
 
 		return rest_ensure_response( $result );
 	}
