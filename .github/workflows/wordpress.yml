@@ -37,5 +37,5 @@ jobs:
           generate-zip: true
         env:
           SLUG: hamelp
-          SVN_USERNAME: ${{ secrets.WP_ORG_USERNAME }}
-          SVN_PASSWORD: ${{ secrets.WP_ORG_PASSWORD }}
+          SVN_USERNAME: ${{ secrets.WP_ORG_USER_FUMIKI }}
+          SVN_PASSWORD: ${{ secrets.WP_ORG_PASS_FUMIKI }}
