@@ -5,6 +5,7 @@
 .git
 .gitignore
 .gitlab-ci.yml
+.husky
 .travis.yml
 .github
 .wp-env.json
