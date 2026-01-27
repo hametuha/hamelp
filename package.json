@@ -4,7 +4,7 @@
 	"description": "FAQ generator for WordPress",
 	"scripts": {
 		"test": "RESULT=${PWD##*/} && wp-env run tests-cli ./wp-content/plugins/$RESULT/vendor/bin/phpunit -c ./wp-content/plugins/$RESULT/phpunit.xml.dist",
-		"test:js": "jest",
+		"test:js": "wp-scripts test-unit-js --testPathPattern=tests/js",
 		"start": "wp-env start",
 		"update": "wp-env start --update",
 		"stop": "wp-env stop",

@@ -64,6 +64,9 @@ jobs:
       - name: Lint CSS
         run: npm run lint:css
 
+      - name: JS Unit Test
+        run: npm run test:js
+
   status:
     name: Status Check
     runs-on: ubuntu-latest
