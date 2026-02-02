@@ -194,7 +194,13 @@ Example: {"answer": "Your answer here.", "cited_ids": [42, 55]}';
 
 		$lines   = [ 'Current user information:' ];
 		$lines[] = sprintf( 'Display name: %s', $user->display_name );
-		$lines[] = sprintf( 'Role: %s', implode( ', ', $user->roles ) );
+
+		// Filter roles to prevent exposing internal plugin roles.
+		$display_roles = $this->get_display_roles( $user );
+		if ( ! empty( $display_roles ) ) {
+			$lines[] = sprintf( 'Role: %s', implode( ', ', $display_roles ) );
+		}
+
 		$lines[] = sprintf( 'Registered: %s', $user->user_registered );
 
 		$context = implode( "\n", $lines );
@@ -214,5 +220,52 @@ Example: {"answer": "Your answer here.", "cited_ids": [42, 55]}';
 		$context = apply_filters( 'hamelp_user_context', $context, $user );
 
 		return is_string( $context ) ? $context : '';
+	}
+
+	/**
+	 * Get user roles filtered by whitelist for display.
+	 *
+	 * Filters out internal plugin roles (e.g., backup plugins)
+	 * that should not be exposed to the AI.
+	 *
+	 * @param \WP_User $user The user object.
+	 * @return string[] Filtered role names safe for display.
+	 */
+	protected function get_display_roles( \WP_User $user ): array {
+		/**
+		 * Filter the list of allowed user roles to display in AI context.
+		 *
+		 * Only roles in this list will be shown to the AI.
+		 * This prevents internal plugin roles from being exposed.
+		 *
+		 * @param string[] $allowed_roles List of role slugs to allow.
+		 */
+		$allowed_roles = apply_filters(
+			'hamelp_allowed_user_roles',
+			[
+				// WordPress core roles.
+				'administrator',
+				'editor',
+				'author',
+				'contributor',
+				'subscriber',
+				// WooCommerce roles.
+				'customer',
+				'shop_manager',
+			]
+		);
+
+		$display_roles = array_intersect( $user->roles, $allowed_roles );
+
+		/**
+		 * Filter the user roles to be displayed in AI context.
+		 *
+		 * Called after whitelist filtering. Allows further customization
+		 * such as translating role slugs to human-readable names.
+		 *
+		 * @param string[] $display_roles Roles to display (already filtered).
+		 * @param \WP_User $user          The user object.
+		 */
+		return apply_filters( 'hamelp_display_user_roles', $display_roles, $user );
 	}
 }
