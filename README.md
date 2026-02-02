@@ -18,10 +18,10 @@ What is help center? We collect examples at our [github wiki](https://github.com
 
 This plugin will provide...
 
-* Custom post type with single page and archive page.
-* Custom taxonomy associated to CPT.
-* Incremental search box.
-* AI Overview(Since 2.0.0)
+-   Custom post type with single page and archive page.
+-   Custom taxonomy associated to CPT.
+-   Incremental search box.
+-   AI Overview(Since 2.0.0)
 
 ### AI Overview
 
@@ -34,29 +34,29 @@ You can configure AI behavior and rate limiting from **Settings > Hamelp** in th
 
 Add the **AI FAQ Overview** block in the block editor. The block has the following options:
 
-- **Placeholder** — Input placeholder text.
-- **Button Text** — Submit button label.
-- **Show Sources** — Display related FAQ links below the answer.
+-   **Placeholder** — Input placeholder text.
+-   **Button Text** — Submit button label.
+-   **Show Sources** — Display related FAQ links below the answer.
 
 #### Using the Template Function
 
 You can also use `hamelp_render_ai_overview()` in your theme templates:
 
-```php
-<?php echo hamelp_render_ai_overview(); ?>
-```
+<pre>
+&lt;?php echo hamelp_render_ai_overview(); ?&gt;
+</pre>
 
 The function accepts an optional array of arguments:
 
-```php
-<?php
+<pre>
+&lt;php
 echo hamelp_render_ai_overview( [
     'placeholder'  => 'Ask a question...',
     'button_text'  => 'Ask AI',
     'show_sources' => true,
 ] );
-?>
-```
+?&gt;
+</pre>
 
 The function automatically enqueues the required JavaScript and CSS assets.
 
@@ -64,9 +64,9 @@ The function automatically enqueues the required JavaScript and CSS assets.
 
 You can use shortcode `hamelp-search` in page content.
 
-```
+<pre>
 [hamelp-search label='Enter your question here.'][/hamelp-search]
-```
+</pre>
 
 And you can call in your theme altenatively.
 
@@ -74,7 +74,7 @@ And you can call in your theme altenatively.
 &lt;?php echo do_shortcode( '[hamelp-search][/hamelp-search]' ) ?&gt;
 </pre>
 
-##  Installation
+## Installation
 
 Install itself is easy. Auto install from admin panel is recommended. Search with `hamelp`.
 
@@ -83,33 +83,41 @@ Install itself is easy. Auto install from admin panel is recommended. Search wit
 
 ## Frequently Asked Questions
 
-> How can I contribute?
+### How can I contribute?
 
 You can contribute to our github repo. Any [issues](https://github.com/hametuha/hamelp/issues) or [PRs](https://github.com/hametuha/hamelp/pulls) are welcomed.
 
 ## Changelog
 
+### 2.1.0
+
+-   Add user context to AI Overview for personalized responses.
+-   Add whitelist-based user role filtering for security (`hamelp_allowed_user_roles` filter).
+-   Add `hamelp_user_context` and `hamelp_display_user_roles` filters for customization.
+-   Add development hooks support for local environment testing.
+-   Remove bundled translations in favor of GlotPress (WordPress.org).
+
 ### 2.0.0
 
-* Add AI Overview Feature.
-* Bump minimum requirements: PHP >=7.4, WordPress >= 6.6
+-   Add AI Overview Feature.
+-   Bump minimum requirements: PHP >=7.4, WordPress >= 6.6
 
 ### 1.0.4
 
-* Add [structured data](https://developers.google.com/search/docs/data-types/faqpage) for FAQPage.
+-   Add [structured data](https://developers.google.com/search/docs/data-types/faqpage) for FAQPage.
 
 ### 1.0.3
 
-* Bugfix and change glocal functions.
+-   Bugfix and change glocal functions.
 
 ### 1.0.2
 
-* Fix taxonomy to be shown in Gutenberg.
+-   Fix taxonomy to be shown in Gutenberg.
 
 ### 1.0.1
 
-* Fix no vendor directory bug.
+-   Fix no vendor directory bug.
 
 ### 1.0.0
 
-* Initial release.
+-   Initial release.

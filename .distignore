@@ -30,6 +30,8 @@ README.md
 wp-cli.local.yml
 yarn.lock
 tests
+/dev/
+/wp/
 gulpfile.js
 node_modules
 .stylelintrc.json

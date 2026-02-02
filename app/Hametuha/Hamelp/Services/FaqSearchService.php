@@ -15,6 +15,7 @@ use WordPress\AI_Client\AI_Client;
  */
 class FaqSearchService {
 
+
 	/**
 	 * Generate AI overview response based on user query.
 	 *
@@ -144,6 +145,11 @@ class FaqSearchService {
 			$base .= "\n\n" . $site_context;
 		}
 
+		$user_context = $this->get_user_context();
+		if ( ! empty( $user_context ) ) {
+			$base .= "\n\n" . $user_context;
+		}
+
 		$base .= "\n\n" . 'Answer user questions based on the provided FAQ content.
 
 IMPORTANT RULES:
@@ -155,6 +161,7 @@ IMPORTANT RULES:
 - If no FAQ is relevant, provide a helpful answer with an empty cited_ids array.
 - Keep your response concise and helpful.
 - Respond in the same language as the user question.
+- If user information is provided, you may address them by name and tailor your response to their context (e.g., role, membership). Do not repeat their personal information back to them.
 
 OUTPUT FORMAT:
 You MUST respond with a JSON object containing exactly these fields:
@@ -170,5 +177,95 @@ Example: {"answer": "Your answer here.", "cited_ids": [42, 55]}';
 		$base = apply_filters( 'hamelp_ai_system_prompt', $base );
 
 		return $base . "\n\n" . $context;
+	}
+
+	/**
+	 * Get user context string for personalization.
+	 *
+	 * Returns empty string for logged-out users.
+	 *
+	 * @return string User context for system prompt, empty if not logged in.
+	 */
+	protected function get_user_context(): string {
+		$user = wp_get_current_user();
+		if ( ! $user->exists() ) {
+			return '';
+		}
+
+		$lines   = [ 'Current user information:' ];
+		$lines[] = sprintf( 'Display name: %s', $user->display_name );
+
+		// Filter roles to prevent exposing internal plugin roles.
+		$display_roles = $this->get_display_roles( $user );
+		if ( ! empty( $display_roles ) ) {
+			$lines[] = sprintf( 'Role: %s', implode( ', ', $display_roles ) );
+		}
+
+		$lines[] = sprintf( 'Registered: %s', $user->user_registered );
+
+		$context = implode( "\n", $lines );
+
+		/**
+		 * Filter user context included in the AI system prompt.
+		 *
+		 * Allows sites to add custom user-specific information
+		 * (e.g., subscription status, purchase history, membership tier)
+		 * that helps the AI provide personalized answers.
+		 *
+		 * Return an empty string to disable user personalization entirely.
+		 *
+		 * @param string   $context The user context string.
+		 * @param \WP_User $user    The current WordPress user object.
+		 */
+		$context = apply_filters( 'hamelp_user_context', $context, $user );
+
+		return is_string( $context ) ? $context : '';
+	}
+
+	/**
+	 * Get user roles filtered by whitelist for display.
+	 *
+	 * Filters out internal plugin roles (e.g., backup plugins)
+	 * that should not be exposed to the AI.
+	 *
+	 * @param \WP_User $user The user object.
+	 * @return string[] Filtered role names safe for display.
+	 */
+	protected function get_display_roles( \WP_User $user ): array {
+		/**
+		 * Filter the list of allowed user roles to display in AI context.
+		 *
+		 * Only roles in this list will be shown to the AI.
+		 * This prevents internal plugin roles from being exposed.
+		 *
+		 * @param string[] $allowed_roles List of role slugs to allow.
+		 */
+		$allowed_roles = apply_filters(
+			'hamelp_allowed_user_roles',
+			[
+				// WordPress core roles.
+				'administrator',
+				'editor',
+				'author',
+				'contributor',
+				'subscriber',
+				// WooCommerce roles.
+				'customer',
+				'shop_manager',
+			]
+		);
+
+		$display_roles = array_intersect( $user->roles, $allowed_roles );
+
+		/**
+		 * Filter the user roles to be displayed in AI context.
+		 *
+		 * Called after whitelist filtering. Allows further customization
+		 * such as translating role slugs to human-readable names.
+		 *
+		 * @param string[] $display_roles Roles to display (already filtered).
+		 * @param \WP_User $user          The user object.
+		 */
+		return apply_filters( 'hamelp_display_user_roles', $display_roles, $user );
 	}
 }
