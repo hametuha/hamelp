@@ -22,8 +22,8 @@ defined( 'ABSPATH' ) || die();
  * Check version and load plugin if possible.
  */
 function hamelp_init() {
-	// i18n.
-	load_plugin_textdomain( 'hamelp', false, basename( __DIR__ ) . '/languages' );
+	// i18n (translations are loaded from WordPress.org via GlotPress).
+	load_plugin_textdomain( 'hamelp' );
 	if ( version_compare( phpversion(), '7.4.0', '>=' ) ) {
 		require __DIR__ . '/vendor/autoload.php';
 		call_user_func( [ 'Hametuha\\Hamelp', 'get' ] );
