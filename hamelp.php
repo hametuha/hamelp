@@ -27,6 +27,10 @@ function hamelp_init() {
 	if ( version_compare( phpversion(), '7.4.0', '>=' ) ) {
 		require __DIR__ . '/vendor/autoload.php';
 		call_user_func( [ 'Hametuha\\Hamelp', 'get' ] );
+		// Load development hooks (environment check is inside the file).
+		if ( file_exists( __DIR__ . '/dev/hooks.php' ) ) {
+			require_once __DIR__ . '/dev/hooks.php';
+		}
 	} else {
 		add_action( 'admin_notices', 'hamelp_version_error' );
 	}
