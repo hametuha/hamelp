@@ -39,3 +39,8 @@ jobs:
           SLUG: hamelp
           SVN_USERNAME: ${{ secrets.WP_ORG_USER_FUMIKI }}
           SVN_PASSWORD: ${{ secrets.WP_ORG_PASS_FUMIKI }}
+
+      - name: Upload release asset
+        run: gh release upload ${{ github.event.release.tag_name }} ${{ github.workspace }}/${{ github.event.repository.name }}.zip --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
