@@ -1,5 +1,6 @@
 .DS_Store
 /assets/
+/wp/
 Thumbs.db
 wp-cli.local.yml
 node_modules/
