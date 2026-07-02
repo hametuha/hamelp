@@ -3,7 +3,7 @@
 Contributors: tarosky, hametuha, Takahashi_Fumiki    
 Tags: faq,help  
 Tested up to: 7.0  
-Stable Tag: 2.2.3  
+Stable Tag: 2.3.1  
 License: GPL 3.0 or later  
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -11,10 +11,12 @@ AI powered FAQ and Help Document Management Plugin for WordPress.
 
 ## Description
 
-**Live demo:** https://demo.kunoichiwp.com/pubplafaq/ — Try the AI Overview on the front page. The demo is in Japanese, built around a fictional anti-aging subscription "Jovian", but you can still get a feel for how the AI answers real questions from your FAQ content (and admits when something isn't covered).
-
 This plugin add new custom post type 'FAQ'. With some functionality, you can build help center for your user.
 What is help center? We collect examples at our [github wiki](https://github.com/tarosky/hamelp/wiki).
+
+**Live demo:** https://demo.kunoichiwp.com/pubplafaq/ — Try the AI Overview on the front page. The demo is in Japanese, built around a fictional anti-aging subscription "Jovian", but you can still get a feel for how the AI answers real questions from your FAQ content (and admits when something isn't covered).
+
+[![WordPress Plugin Test](https://github.com/tarosky/hamelp/actions/workflows/test.yml/badge.svg)](https://github.com/tarosky/hamelp/actions/workflows/test.yml)
 
 ### Creating Portal
 
@@ -108,6 +110,10 @@ Install itself is easy. Auto install from admin panel is recommended. Search wit
 You can contribute to our github repo. Any [issues](https://github.com/tarosky/hamelp/issues) or [PRs](https://github.com/tarosky/hamelp/pulls) are welcomed.
 
 ## Changelog
+
+### 2.3.1
+
+- User can change the reference prefix (Ref. 1).
 
 ### 2.3.0
 
