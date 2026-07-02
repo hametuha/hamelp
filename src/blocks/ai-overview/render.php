@@ -15,6 +15,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		'class'             => 'hamelp-ai-overview',
 		'data-show-sources' => $show_sources,
 		'data-mode'         => hamelp_ai_overview_mode(),
+		'data-ref-label'    => hamelp_ref_label(),
 	]
 );
 

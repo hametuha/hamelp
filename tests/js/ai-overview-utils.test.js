@@ -145,4 +145,28 @@ describe( 'replaceIdReferences', () => {
 		const result = replaceIdReferences( 'See [ID:100].', sources );
 		expect( result ).toContain( 'title="FAQ One"' );
 	} );
+
+	it( 'uses a custom refLabel template when provided', () => {
+		const result = replaceIdReferences(
+			'See [ID:100].',
+			sources,
+			'出典:%d'
+		);
+		expect( result ).toContain( '出典:1' );
+		expect( result ).not.toContain( '(Ref. 1)' );
+	} );
+
+	it( 'substitutes every %d occurrence in a custom refLabel', () => {
+		const result = replaceIdReferences(
+			'See [ID:200].',
+			sources,
+			'[%d] (source #%d)'
+		);
+		expect( result ).toContain( '[2] (source #2)' );
+	} );
+
+	it( 'falls back to the default label when refLabel is empty', () => {
+		const result = replaceIdReferences( 'See [ID:100].', sources, '' );
+		expect( result ).toContain( '(Ref. 1)' );
+	} );
 } );

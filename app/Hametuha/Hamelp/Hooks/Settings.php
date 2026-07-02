@@ -223,6 +223,30 @@ class Settings extends Singleton {
 			]
 		);
 
+		// Citation reference label (customizable, translatable).
+		register_setting(
+			self::OPTION_GROUP,
+			'hamelp_ref_label',
+			[
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'default'           => __( '(Ref. %d)', 'hamelp' ),
+			]
+		);
+
+		add_settings_field(
+			'hamelp_ref_label',
+			__( 'Citation Label', 'hamelp' ),
+			[ $this, 'render_text' ],
+			self::PAGE_SLUG,
+			'hamelp_ai_section',
+			[
+				'option_name' => 'hamelp_ref_label',
+				'default'     => __( '(Ref. %d)', 'hamelp' ),
+				'description' => __( 'Label shown for each inline citation in AI answers. Use %d as a placeholder for the citation number.', 'hamelp' ),
+			]
+		);
+
 		foreach ( $fields as $suffix => $field ) {
 			$option_name = self::OPTION_PREFIX . $suffix;
 			add_settings_field(
@@ -474,6 +498,27 @@ class Settings extends Singleton {
 			'<p class="description">%s</p>',
 			esc_html( $args['description'] )
 		);
+	}
+
+	/**
+	 * Render a text input field.
+	 *
+	 * @param array $args Field arguments.
+	 */
+	public function render_text( array $args ) {
+		$value = get_option( $args['option_name'], $args['default'] ?? '' );
+		printf(
+			'<input type="text" name="%s" id="%s" value="%s" class="regular-text" />',
+			esc_attr( $args['option_name'] ),
+			esc_attr( $args['option_name'] ),
+			esc_attr( $value )
+		);
+		if ( ! empty( $args['description'] ) ) {
+			printf(
+				'<p class="description">%s</p>',
+				esc_html( $args['description'] )
+			);
+		}
 	}
 
 	/**
