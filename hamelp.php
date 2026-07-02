@@ -145,6 +145,23 @@ function hamelp_ai_overview_mode() {
 }
 
 /**
+ * Get the citation reference label template.
+ *
+ * `%d` is replaced with the citation's index (1-based) at render time.
+ *
+ * @return string Label template, e.g. `(Ref. %d)`.
+ */
+function hamelp_ref_label() {
+	$label = get_option( 'hamelp_ref_label', __( '(Ref. %d)', 'hamelp' ) );
+	/**
+	 * Filter the citation reference label template.
+	 *
+	 * @param string $label Label template containing `%d`.
+	 */
+	return apply_filters( 'hamelp_ref_label', $label );
+}
+
+/**
  * Get asset url
  *
  * @return string
@@ -317,9 +334,10 @@ function hamelp_render_ai_overview( $args = [] ) {
 	// Build wrapper attributes if not provided (non-block context).
 	if ( empty( $args['wrapper_attrs'] ) ) {
 		$args['wrapper_attrs'] = sprintf(
-			'class="hamelp-ai-overview" data-show-sources="%s" data-mode="%s"',
+			'class="hamelp-ai-overview" data-show-sources="%s" data-mode="%s" data-ref-label="%s"',
 			$args['show_sources'] ? 'true' : 'false',
-			esc_attr( $mode )
+			esc_attr( $mode ),
+			esc_attr( hamelp_ref_label() )
 		);
 	}
 

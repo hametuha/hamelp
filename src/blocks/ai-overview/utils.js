@@ -101,14 +101,18 @@ export function parseMarkdown( text ) {
  *
  * Handles both single [ID:42] and comma-separated [ID:42, ID:55] patterns.
  *
- * @param {string} html    Parsed HTML string.
- * @param {Array}  sources Array of { id, title, url } objects.
+ * @param {string} html     Parsed HTML string.
+ * @param {Array}  sources  Array of { id, title, url } objects.
+ * @param {string} refLabel Label template for each citation; `%d` is
+ *                          replaced with the citation's index. Defaults to
+ *                          `(Ref. %d)` when empty.
  * @return {string} HTML with references replaced by links.
  */
-export function replaceIdReferences( html, sources ) {
+export function replaceIdReferences( html, sources, refLabel ) {
 	if ( ! sources?.length ) {
 		return html;
 	}
+	const label = refLabel || '(Ref. %d)';
 	const sourceMap = {};
 	sources.forEach( ( source, i ) => {
 		sourceMap[ source.id ] = { ...source, index: i + 1 };
@@ -120,9 +124,11 @@ export function replaceIdReferences( html, sources ) {
 		const refs = ids
 			.map( ( id ) => {
 				const source = sourceMap[ id ];
-				return source
-					? `<a href="${ source.url }" class="hamelp-ai-overview__ref" title="${ source.title }">(Ref. ${ source.index })</a>`
-					: null;
+				if ( ! source ) {
+					return null;
+				}
+				const text = label.replace( /%d/g, source.index );
+				return `<a href="${ source.url }" class="hamelp-ai-overview__ref" title="${ source.title }">${ text }</a>`;
 			} )
 			.filter( Boolean );
 		return refs.length ? refs.join( ' ' ) : match;

@@ -53,6 +53,7 @@ document.querySelectorAll( '.hamelp-ai-overview' ).forEach( ( container ) => {
 	const button = container.querySelector( 'button' );
 	const showSources = container.dataset.showSources === 'true';
 	const mode = container.dataset.mode || 'conversation';
+	const refLabel = container.dataset.refLabel;
 	const continueLabel = container.querySelector(
 		'.hamelp-ai-overview__continue'
 	);
@@ -138,7 +139,8 @@ document.querySelectorAll( '.hamelp-ai-overview' ).forEach( ( container ) => {
 			// Parse markdown, then replace [ID:xxx] with source links.
 			const parsedAnswer = replaceIdReferences(
 				parseMarkdown( data.answer ),
-				data.sources
+				data.sources,
+				refLabel
 			);
 			let html = parsedAnswer;
 			if ( showSources ) {
