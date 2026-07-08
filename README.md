@@ -118,6 +118,7 @@ For full release notes of each version, see [GitHub Releases](https://github.com
 - Add an **AI Model** setting to pin the provider/model used for AI Overview. Only configured connectors (WordPress 7.0 Settings → Connectors) are listed, and if the chosen model later becomes unavailable it falls back to auto-selection instead of failing.
 - Change the default **temperature** to omitted. Some models (e.g. Claude Opus/Sonnet) reject a temperature and returned a 400 error when auto-selected; omitting is safe for every model. Set a value on the settings page only if you need it.
 - Add `hamelp_ai_model` and `hamelp_ai_temperature` filters to override the model and temperature from code.
+- Improve source citations: rename the "Related FAQs" heading to **Sources**, and render the list as a numbered (ordered) list so its numbers line up with the inline `(Ref. N)` citations in the answer.
 
 ### 2.3.1
 
