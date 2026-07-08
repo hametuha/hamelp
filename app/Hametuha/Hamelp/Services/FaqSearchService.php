@@ -80,17 +80,17 @@ class FaqSearchService {
 		/**
 		 * Filter the preferred AI model for FAQ overview generation.
 		 *
-		 * By default the AI client auto-selects a configured provider/model.
-		 * Return a value to pin a specific model, which is useful when a site
-		 * has several providers connected. Accepted forms mirror the AI client's
-		 * model preference API:
+		 * The default is resolved from the Hamelp settings screen and validated
+		 * against the live provider registry, so a selection whose connector was
+		 * disabled outside Hamelp falls back to auto-selection. Return a value to
+		 * override. Accepted forms mirror the AI client's model preference API:
 		 *
 		 * - a model ID string, e.g. `'gemini-2.5-flash'`
 		 * - a `[ provider_id, model_id ]` pair, e.g. `[ 'anthropic', 'claude-opus-4-1' ]`
 		 *
-		 * @param string|array|null $model Preferred model. Null (default) auto-selects.
+		 * @param string|array|null $model Preferred model. Null auto-selects.
 		 */
-		$model = apply_filters( 'hamelp_ai_model', null );
+		$model = apply_filters( 'hamelp_ai_model', AiModelResolver::get_effective_model_preference() );
 		if ( ! empty( $model ) ) {
 			$prompt = $prompt->using_model_preference( $model );
 		}
@@ -98,13 +98,14 @@ class FaqSearchService {
 		/**
 		 * Filter the sampling temperature for FAQ overview generation.
 		 *
-		 * Return `null` to omit the temperature entirely. This is required for
-		 * models that reject the parameter (e.g. Claude Opus responds with a
-		 * 400 error when a temperature is supplied).
+		 * The default is resolved from the Hamelp settings screen. Return `null`
+		 * to omit the temperature entirely. This is required for models that
+		 * reject the parameter (e.g. Claude Opus responds with a 400 error when a
+		 * temperature is supplied).
 		 *
-		 * @param float|null $temperature Sampling temperature. Default 0.3. Null omits it.
+		 * @param float|null $temperature Sampling temperature. Null omits it.
 		 */
-		$temperature = apply_filters( 'hamelp_ai_temperature', 0.3 );
+		$temperature = apply_filters( 'hamelp_ai_temperature', AiModelResolver::get_effective_temperature() );
 		if ( null !== $temperature ) {
 			$prompt = $prompt->using_temperature( (float) $temperature );
 		}
