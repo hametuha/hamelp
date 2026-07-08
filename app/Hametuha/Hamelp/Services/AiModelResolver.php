@@ -35,8 +35,8 @@ class AiModelResolver {
 	/**
 	 * Option holding the sampling temperature.
 	 *
-	 * Empty string means "omit the parameter" (required by models such as
-	 * Claude Opus that reject a temperature). Defaults to `0.3`.
+	 * Empty string means "omit the parameter" and is the default, since omitting
+	 * is safe for every model while some (e.g. Claude Opus) reject a temperature.
 	 *
 	 * @var string
 	 */
@@ -130,7 +130,7 @@ class AiModelResolver {
 	 * @return float|null Temperature, or null to omit the parameter entirely.
 	 */
 	public static function get_effective_temperature(): ?float {
-		$stored = get_option( self::OPTION_TEMPERATURE, '0.3' );
+		$stored = get_option( self::OPTION_TEMPERATURE, '' );
 		if ( '' === $stored || null === $stored ) {
 			return null;
 		}

@@ -246,14 +246,14 @@ class Settings extends Singleton {
 			]
 		);
 
-		// Sampling temperature (blank omits the parameter, e.g. for Claude Opus).
+		// Sampling temperature (blank = omit, which is the default and safe for all models).
 		register_setting(
 			self::OPTION_GROUP,
 			AiModelResolver::OPTION_TEMPERATURE,
 			[
 				'type'              => 'string',
 				'sanitize_callback' => [ $this, 'sanitize_temperature' ],
-				'default'           => '0.3',
+				'default'           => '',
 			]
 		);
 
@@ -265,8 +265,8 @@ class Settings extends Singleton {
 			'hamelp_ai_section',
 			[
 				'option_name' => AiModelResolver::OPTION_TEMPERATURE,
-				'default'     => '0.3',
-				'description' => __( 'Sampling temperature between 0 and 2 (e.g. 0.3). Leave blank to omit it entirely — required for models that reject a temperature, such as Claude Opus.', 'hamelp' ),
+				'default'     => '',
+				'description' => __( 'Sampling temperature between 0 and 2 (e.g. 0.3). Leave blank (the default) to omit it entirely — omitting is safe for every model, whereas some models (e.g. Claude Opus) return an error if a temperature is supplied.', 'hamelp' ),
 			]
 		);
 
