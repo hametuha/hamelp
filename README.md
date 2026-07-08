@@ -3,7 +3,7 @@
 Contributors: tarosky, hametuha, Takahashi_Fumiki    
 Tags: faq,help  
 Tested up to: 7.0  
-Stable Tag: 2.3.1  
+Stable Tag: 2.4.0  
 License: GPL 3.0 or later  
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -110,6 +110,14 @@ Install itself is easy. Auto install from admin panel is recommended. Search wit
 You can contribute to our github repo. Any [issues](https://github.com/tarosky/hamelp/issues) or [PRs](https://github.com/tarosky/hamelp/pulls) are welcomed.
 
 ## Changelog
+
+For full release notes of each version, see [GitHub Releases](https://github.com/tarosky/hamelp/releases).
+
+### 2.4.0
+
+- Add an **AI Model** setting to pin the provider/model used for AI Overview. Only configured connectors (WordPress 7.0 Settings → Connectors) are listed, and if the chosen model later becomes unavailable it falls back to auto-selection instead of failing.
+- Change the default **temperature** to omitted. Some models (e.g. Claude Opus/Sonnet) reject a temperature and returned a 400 error when auto-selected; omitting is safe for every model. Set a value on the settings page only if you need it.
+- Add `hamelp_ai_model` and `hamelp_ai_temperature` filters to override the model and temperature from code.
 
 ### 2.3.1
 
