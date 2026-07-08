@@ -74,9 +74,42 @@ class FaqSearchService {
 		}
 		$messages[] = new UserMessage( [ new MessagePart( $query ) ] );
 
-		$response = wp_ai_client_prompt( $messages )
-			->using_system_instruction( $system_prompt )
-			->using_temperature( 0.3 )
+		$prompt = wp_ai_client_prompt( $messages )
+			->using_system_instruction( $system_prompt );
+
+		/**
+		 * Filter the preferred AI model for FAQ overview generation.
+		 *
+		 * By default the AI client auto-selects a configured provider/model.
+		 * Return a value to pin a specific model, which is useful when a site
+		 * has several providers connected. Accepted forms mirror the AI client's
+		 * model preference API:
+		 *
+		 * - a model ID string, e.g. `'gemini-2.5-flash'`
+		 * - a `[ provider_id, model_id ]` pair, e.g. `[ 'anthropic', 'claude-opus-4-1' ]`
+		 *
+		 * @param string|array|null $model Preferred model. Null (default) auto-selects.
+		 */
+		$model = apply_filters( 'hamelp_ai_model', null );
+		if ( ! empty( $model ) ) {
+			$prompt = $prompt->using_model_preference( $model );
+		}
+
+		/**
+		 * Filter the sampling temperature for FAQ overview generation.
+		 *
+		 * Return `null` to omit the temperature entirely. This is required for
+		 * models that reject the parameter (e.g. Claude Opus responds with a
+		 * 400 error when a temperature is supplied).
+		 *
+		 * @param float|null $temperature Sampling temperature. Default 0.3. Null omits it.
+		 */
+		$temperature = apply_filters( 'hamelp_ai_temperature', 0.3 );
+		if ( null !== $temperature ) {
+			$prompt = $prompt->using_temperature( (float) $temperature );
+		}
+
+		$response = $prompt
 			->as_json_response()
 			->generate_text();
 
