@@ -176,9 +176,11 @@
 	font-weight: var(--hamelp-font-weight, 600);
 }
 
-:where(.hamelp-ai-overview__sources ul) {
+:where(.hamelp-ai-overview__sources ol) {
 	margin: 0;
 	padding-left: 1.5rem;
+	// Numbered so the list index matches the inline "Ref. N" citations.
+	list-style: decimal;
 }
 
 :where(.hamelp-ai-overview__sources li) {

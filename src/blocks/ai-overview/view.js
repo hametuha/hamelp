@@ -30,12 +30,12 @@ function renderSources( sources ) {
 	}
 	let html =
 		'<div class="hamelp-ai-overview__sources"><p>' +
-		__( 'Related FAQs:', 'hamelp' ) +
-		'</p><ul>';
+		__( 'Sources:', 'hamelp' ) +
+		'</p><ol>';
 	sources.forEach( ( source ) => {
 		html += `<li><a href="${ source.url }">${ source.title }</a></li>`;
 	} );
-	html += '</ul></div>';
+	html += '</ol></div>';
 	return html;
 }
 
