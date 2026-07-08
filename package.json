@@ -1,6 +1,6 @@
 {
 	"name": "hamelp",
-	"version": "2.3.0",
+	"version": "2.4.0",
 	"description": "FAQ generator for WordPress",
 	"scripts": {
 		"test": "RESULT=${PWD##*/} && wp-env run tests-cli ./wp-content/plugins/$RESULT/vendor/bin/phpunit -c ./wp-content/plugins/$RESULT/phpunit.xml.dist",

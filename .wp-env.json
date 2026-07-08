@@ -2,7 +2,9 @@
 	"phpVersion": "7.4",
 	"plugins": [
 		".",
-		"https://downloads.wordpress.org/plugin/query-monitor.latest-stable.zip"
+		"https://downloads.wordpress.org/plugin/query-monitor.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/ai-provider-for-google.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/ai-provider-for-anthropic.latest-stable.zip"
 	],
 	"themes": [
 		"https://downloads.wordpress.org/theme/twentytwentyone.latest-stable.zip"

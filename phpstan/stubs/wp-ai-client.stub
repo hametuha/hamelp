@@ -17,6 +17,11 @@ namespace {
 	class WP_AI_Client_Prompt_Builder {
 		public function using_system_instruction( string $instruction ): self {}
 
+		/**
+		 * @param string|array|\WordPress\AiClient\Providers\Models\Contracts\ModelInterface ...$preferredModels
+		 */
+		public function using_model_preference( ...$preferredModels ): self {}
+
 		public function using_temperature( float $temperature ): self {}
 
 		public function as_json_response( ?array $schema = null ): self {}
@@ -52,5 +57,60 @@ namespace WordPress\AiClient\Messages\DTO {
 		 * @param MessagePart[] $parts
 		 */
 		public function __construct( array $parts ) {}
+	}
+}
+
+namespace WordPress\AiClient {
+	class AiClient {
+		public static function defaultRegistry(): \WordPress\AiClient\Providers\ProviderRegistry {}
+	}
+}
+
+namespace WordPress\AiClient\Providers {
+	class ProviderRegistry {
+		/**
+		 * @param \WordPress\AiClient\Providers\Models\DTO\ModelRequirements $requirements
+		 * @return \WordPress\AiClient\Providers\DTO\ProviderModelsMetadata[]
+		 */
+		public function findModelsMetadataForSupport( $requirements ): array {}
+	}
+}
+
+namespace WordPress\AiClient\Providers\DTO {
+	class ProviderMetadata {
+		public function getId(): string {}
+
+		public function getName(): string {}
+	}
+
+	class ProviderModelsMetadata {
+		public function getProvider(): \WordPress\AiClient\Providers\DTO\ProviderMetadata {}
+
+		/**
+		 * @return \WordPress\AiClient\Providers\Models\DTO\ModelMetadata[]
+		 */
+		public function getModels(): array {}
+	}
+}
+
+namespace WordPress\AiClient\Providers\Models\DTO {
+	class ModelMetadata {
+		public function getId(): string {}
+
+		public function getName(): string {}
+	}
+
+	class ModelRequirements {
+		/**
+		 * @param \WordPress\AiClient\Providers\Models\Enums\CapabilityEnum[] $requiredCapabilities
+		 * @param array                                                      $requiredOptions
+		 */
+		public function __construct( array $requiredCapabilities, array $requiredOptions ) {}
+	}
+}
+
+namespace WordPress\AiClient\Providers\Models\Enums {
+	class CapabilityEnum {
+		public static function textGeneration(): self {}
 	}
 }

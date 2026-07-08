@@ -8,6 +8,7 @@
 namespace Hametuha\Hamelp\Hooks;
 
 use Hametuha\Hamelp\Pattern\Singleton;
+use Hametuha\Hamelp\Services\AiModelResolver;
 use Hametuha\Hamelp\Services\FaqCatalogBuilder;
 
 /**
@@ -220,6 +221,52 @@ class Settings extends Singleton {
 					'off'          => __( 'Disabled: the AI Overview is turned off everywhere.', 'hamelp' ),
 				],
 				'description' => __( 'Controls how the AI Overview behaves. Switch to "Single answer" or "Disabled" to cut LLM cost or stop the feature during a request flood or abuse spike.', 'hamelp' ),
+			]
+		);
+
+		// Preferred AI model (auto-select by default; validated against the live registry).
+		register_setting(
+			self::OPTION_GROUP,
+			AiModelResolver::OPTION_MODEL,
+			[
+				'type'              => 'string',
+				'sanitize_callback' => [ $this, 'sanitize_model' ],
+				'default'           => '',
+			]
+		);
+
+		add_settings_field(
+			AiModelResolver::OPTION_MODEL,
+			__( 'AI Model', 'hamelp' ),
+			[ $this, 'render_model_select' ],
+			self::PAGE_SLUG,
+			'hamelp_ai_section',
+			[
+				'option_name' => AiModelResolver::OPTION_MODEL,
+			]
+		);
+
+		// Sampling temperature (blank = omit, which is the default and safe for all models).
+		register_setting(
+			self::OPTION_GROUP,
+			AiModelResolver::OPTION_TEMPERATURE,
+			[
+				'type'              => 'string',
+				'sanitize_callback' => [ $this, 'sanitize_temperature' ],
+				'default'           => '',
+			]
+		);
+
+		add_settings_field(
+			AiModelResolver::OPTION_TEMPERATURE,
+			__( 'Temperature', 'hamelp' ),
+			[ $this, 'render_text' ],
+			self::PAGE_SLUG,
+			'hamelp_ai_section',
+			[
+				'option_name' => AiModelResolver::OPTION_TEMPERATURE,
+				'default'     => '',
+				'description' => __( 'Sampling temperature between 0 and 2 (e.g. 0.3). Leave blank (the default) to omit it entirely — omitting is safe for every model, whereas some models (e.g. Claude Opus) return an error if a temperature is supplied.', 'hamelp' ),
 			]
 		);
 
@@ -553,6 +600,91 @@ class Settings extends Singleton {
 	public function sanitize_mode( $value ) {
 		$allowed = [ 'conversation', 'single', 'off' ];
 		return in_array( $value, $allowed, true ) ? $value : 'conversation';
+	}
+
+	/**
+	 * Render the AI model select field.
+	 *
+	 * Choices are built from the live registry so only currently configured
+	 * providers/models appear. Warns when a previously saved model is no longer
+	 * available (e.g. its connector was disabled outside Hamelp).
+	 *
+	 * @param array $args Field arguments (option_name).
+	 */
+	public function render_model_select( array $args ) {
+		if ( ! AiModelResolver::is_ai_available() ) {
+			printf(
+				'<p class="description">%s</p>',
+				esc_html__( 'No AI provider is available. Connect one in Settings → Connectors, then reload this page.', 'hamelp' )
+			);
+			return;
+		}
+
+		$value   = (string) get_option( $args['option_name'], '' );
+		$choices = [ '' => __( 'Auto (recommended)', 'hamelp' ) ] + AiModelResolver::get_available_models();
+
+		printf( '<select name="%1$s" id="%1$s">', esc_attr( $args['option_name'] ) );
+		foreach ( $choices as $key => $label ) {
+			printf(
+				'<option value="%s" %s>%s</option>',
+				esc_attr( $key ),
+				selected( $value, $key, false ),
+				esc_html( $label )
+			);
+		}
+		echo '</select>';
+
+		if ( AiModelResolver::is_stored_model_stale() ) {
+			printf(
+				'<p class="description" style="color:#b32d2e;">%s</p>',
+				esc_html__( 'The previously selected model is no longer available (its connector may have been disabled). Auto-selection is being used until you choose an available model.', 'hamelp' )
+			);
+		}
+
+		printf(
+			'<p class="description">%s</p>',
+			esc_html__( 'Pin the provider/model used for AI Overview. Only configured connectors are listed. If the chosen model becomes unavailable, Hamelp falls back to auto-selection instead of failing.', 'hamelp' )
+		);
+	}
+
+	/**
+	 * Sanitize the AI model option.
+	 *
+	 * Accepts only the empty string (auto) or a currently available
+	 * `provider_id|model_id` value; anything else resets to auto.
+	 *
+	 * @param string $value Submitted value.
+	 * @return string A valid model key, or empty string for auto-select.
+	 */
+	public function sanitize_model( $value ) {
+		$value = (string) $value;
+		if ( '' === $value ) {
+			return '';
+		}
+		$available = AiModelResolver::get_available_models();
+		return isset( $available[ $value ] ) ? $value : '';
+	}
+
+	/**
+	 * Sanitize the temperature option.
+	 *
+	 * Empty string is preserved (omit the parameter). A numeric value is clamped
+	 * to the 0–2 range. Any other input falls back to the default.
+	 *
+	 * @param string $value Submitted value.
+	 * @return string Sanitized temperature, or empty string to omit it.
+	 */
+	public function sanitize_temperature( $value ) {
+		$value = trim( (string) $value );
+		if ( '' === $value ) {
+			return '';
+		}
+		if ( ! is_numeric( $value ) ) {
+			return '0.3';
+		}
+		$float = (float) $value;
+		$float = max( 0.0, min( 2.0, $float ) );
+		return (string) $float;
 	}
 
 	/**
