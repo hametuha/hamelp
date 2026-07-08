@@ -111,15 +111,15 @@ class FaqSearchService {
 		}
 
 		$response = $prompt
-			->as_json_response()
+			->as_json_response( self::response_schema() )
 			->generate_text();
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
 
-		$data = json_decode( $response, true );
-		if ( ! $data || ! isset( $data['answer'] ) ) {
+		$data = self::decode_json_response( $response );
+		if ( null === $data ) {
 			// JSON parse failed: treat response as plain text.
 			return [
 				'answer'    => $response,
@@ -147,6 +147,69 @@ class FaqSearchService {
 			'sources'   => $sources,
 			'cited_ids' => wp_list_pluck( $sources, 'id' ),
 		];
+	}
+
+	/**
+	 * JSON schema constraining the model's structured output.
+	 *
+	 * Passed to `as_json_response()` so providers that support structured output
+	 * enforce the exact `{ answer, cited_ids }` shape. `additionalProperties` is
+	 * explicitly false because some providers (e.g. Anthropic) reject object
+	 * schemas without it.
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected static function response_schema(): array {
+		return [
+			'type'                 => 'object',
+			'additionalProperties' => false,
+			'properties'           => [
+				'answer'    => [ 'type' => 'string' ],
+				'cited_ids' => [
+					'type'  => 'array',
+					'items' => [ 'type' => 'integer' ],
+				],
+			],
+			'required'             => [ 'answer', 'cited_ids' ],
+		];
+	}
+
+	/**
+	 * Decode the model's JSON response, unwrapping double-encoded output.
+	 *
+	 * Even with a response schema, some models occasionally return the whole
+	 * `{ answer, cited_ids }` object as a JSON string nested inside the `answer`
+	 * field. This unwraps up to a few levels so the real answer and citations
+	 * are recovered instead of leaking raw JSON to the user with empty sources.
+	 *
+	 * @param string $response Raw text returned by the model.
+	 * @return array|null Decoded `{ answer, cited_ids }` array, or null if unusable.
+	 */
+	public static function decode_json_response( string $response ): ?array {
+		$data  = json_decode( $response, true );
+		$depth = 0;
+		while (
+			is_array( $data )
+			&& isset( $data['answer'] )
+			&& is_string( $data['answer'] )
+			&& $depth < 3
+		) {
+			$trimmed = trim( $data['answer'] );
+			if ( '' === $trimmed || '{' !== $trimmed[0] ) {
+				break;
+			}
+			$inner = json_decode( $trimmed, true );
+			if ( ! is_array( $inner ) || ! isset( $inner['answer'] ) ) {
+				break;
+			}
+			$data = $inner;
+			++$depth;
+		}
+
+		if ( ! is_array( $data ) || ! isset( $data['answer'] ) ) {
+			return null;
+		}
+		return $data;
 	}
 
 	/**
