@@ -191,6 +191,38 @@ class AiOverviewTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A standalone literal carriage return (no following n) becomes one real newline.
+	 */
+	public function test_normalize_answer_text_literal_lone_cr() {
+		$this->assertSame(
+			"line1\nline2",
+			FaqSearchService::normalize_answer_text( 'line1\rline2' )
+		);
+	}
+
+	/**
+	 * A real newline and a literal escape sequence in the same string both
+	 * end up as real newlines, with the pre-existing real newline untouched.
+	 */
+	public function test_normalize_answer_text_mixed_real_and_literal_newline() {
+		$this->assertSame(
+			"line1\nline2\nline3",
+			FaqSearchService::normalize_answer_text( "line1\nline2" . '\n' . 'line3' )
+		);
+	}
+
+	/**
+	 * Normalization is idempotent: running it on already-normalized output
+	 * produces the same result as a single pass.
+	 */
+	public function test_normalize_answer_text_idempotent() {
+		$input = 'a\r\nb\tc' . "\n" . 'd';
+		$once  = FaqSearchService::normalize_answer_text( $input );
+		$twice = FaqSearchService::normalize_answer_text( $once );
+		$this->assertSame( $once, $twice );
+	}
+
+	/**
 	 * The AI Overview mode defaults to conversation and honors option/filter.
 	 */
 	public function test_ai_overview_mode() {
