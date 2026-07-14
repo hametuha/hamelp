@@ -122,7 +122,7 @@ class FaqSearchService {
 		if ( null === $data ) {
 			// JSON parse failed: treat response as plain text.
 			return [
-				'answer'    => $response,
+				'answer'    => self::normalize_answer_text( $response ),
 				'sources'   => [],
 				'cited_ids' => [],
 			];
@@ -143,7 +143,7 @@ class FaqSearchService {
 		}
 
 		return [
-			'answer'    => $data['answer'],
+			'answer'    => self::normalize_answer_text( (string) $data['answer'] ),
 			'sources'   => $sources,
 			'cited_ids' => wp_list_pluck( $sources, 'id' ),
 		];
@@ -210,6 +210,34 @@ class FaqSearchService {
 			return null;
 		}
 		return $data;
+	}
+
+	/**
+	 * Normalize literal escape sequences in answer text into real characters.
+	 *
+	 * Some models double-escape newlines in their structured JSON output, so a
+	 * single `json_decode()` leaves the two-character sequence `\n` (backslash +
+	 * n) in the answer instead of a real line break. The frontend renderer only
+	 * understands real newline characters, so those literals leak into the
+	 * rendered answer as raw text. This converts the common literal sequences
+	 * back into the real characters they represent.
+	 *
+	 * A `strtr()` map is used so replacement is single-pass and order-independent
+	 * (the longer `\r\n` sequence is matched before the shorter `\r`/`\n`).
+	 *
+	 * @param string $text Answer text possibly containing literal escape sequences.
+	 * @return string Text with literal `\r\n`, `\n`, `\r` and `\t` converted.
+	 */
+	public static function normalize_answer_text( string $text ): string {
+		return strtr(
+			$text,
+			[
+				'\\r\\n' => "\n",
+				'\\n'    => "\n",
+				'\\r'    => "\n",
+				'\\t'    => "\t",
+			]
+		);
 	}
 
 	/**

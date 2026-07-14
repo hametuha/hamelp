@@ -131,6 +131,66 @@ class AiOverviewTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Literal newline escape sequences are converted to real characters.
+	 */
+	public function test_normalize_answer_text_literal_newline() {
+		$this->assertSame(
+			"line1\nline2",
+			FaqSearchService::normalize_answer_text( 'line1\nline2' )
+		);
+	}
+
+	/**
+	 * Literal double newlines (paragraph breaks) are converted.
+	 */
+	public function test_normalize_answer_text_literal_double_newline() {
+		$this->assertSame(
+			"para1\n\npara2",
+			FaqSearchService::normalize_answer_text( 'para1\n\npara2' )
+		);
+	}
+
+	/**
+	 * A literal CRLF sequence collapses to a single real newline.
+	 */
+	public function test_normalize_answer_text_literal_crlf() {
+		$this->assertSame(
+			"line1\nline2",
+			FaqSearchService::normalize_answer_text( 'line1\r\nline2' )
+		);
+	}
+
+	/**
+	 * A literal tab sequence is converted to a real tab.
+	 */
+	public function test_normalize_answer_text_literal_tab() {
+		$this->assertSame(
+			"a\tb",
+			FaqSearchService::normalize_answer_text( 'a\tb' )
+		);
+	}
+
+	/**
+	 * Real newline characters are left intact.
+	 */
+	public function test_normalize_answer_text_real_newline_untouched() {
+		$this->assertSame(
+			"line1\nline2",
+			FaqSearchService::normalize_answer_text( "line1\nline2" )
+		);
+	}
+
+	/**
+	 * Plain text without escape sequences is returned unchanged.
+	 */
+	public function test_normalize_answer_text_plain_unchanged() {
+		$this->assertSame(
+			'Just a plain answer.',
+			FaqSearchService::normalize_answer_text( 'Just a plain answer.' )
+		);
+	}
+
+	/**
 	 * The AI Overview mode defaults to conversation and honors option/filter.
 	 */
 	public function test_ai_overview_mode() {
