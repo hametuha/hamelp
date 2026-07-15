@@ -358,7 +358,7 @@ function hamelp_render_ai_overview( $args = [] ) {
 	<form class="hamelp-ai-overview__form">
 		%2$s
 		<div class="hamelp-ai-overview__input-row">
-			<input type="text" class="hamelp-ai-overview__input" placeholder="%3$s" required />
+			<textarea class="hamelp-ai-overview__input" placeholder="%3$s" required></textarea>
 			<button type="submit" class="hamelp-ai-overview__button">%4$s</button>
 		</div>
 	</form>

@@ -48,7 +48,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			<div { ...useBlockProps( { className: 'hamelp-ai-overview' } ) }>
 				<div className="hamelp-ai-overview__preview">
-					<input type="text" placeholder={ placeholder } disabled />
+					<textarea placeholder={ placeholder } disabled />
 					<button disabled>{ buttonText }</button>
 				</div>
 				<p className="hamelp-ai-overview__note">
