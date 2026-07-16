@@ -151,6 +151,11 @@
 // theme-injected values; max-height:none guards against theme height caps.
 // Cosmetics (background/gradient, color, transition, :hover, focus color) stay
 // low-specificity in :where() below so themes can still re-skin them.
+// BOTH axes are neutralized: min-height:0/max-height:none guard the height, and
+// min-width:0/max-width:none guard the width. Without the width guards a theme
+// rule like `button { min-width: <N>px }` sets a floor that beats the applied
+// `width` (min-width overrides width regardless of specificity), stretching the
+// circle into a horizontal ellipse while the height stays fixed.
 .hamelp-ai-overview .hamelp-ai-overview__button {
 	// Fixed-size circular icon button (ChatGPT-style), floated inside the field's
 	// bottom-right corner. The constant bottom offset keeps it pinned to the
@@ -165,6 +170,8 @@
 	box-sizing: border-box;
 	width: var(--hamelp-btn-size);
 	height: var(--hamelp-btn-size);
+	min-width: 0;
+	max-width: none;
 	min-height: 0;
 	max-height: none;
 	padding: 0;
