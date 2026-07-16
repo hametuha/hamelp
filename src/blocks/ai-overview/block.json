@@ -16,6 +16,10 @@
 			"type": "string",
 			"default": "Ask AI"
 		},
+		"hintText": {
+			"type": "string",
+			"default": "Shift + Enter で改行"
+		},
 		"showSources": {
 			"type": "boolean",
 			"default": true

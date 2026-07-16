@@ -15,6 +15,13 @@
  */
 
 :where(.hamelp-ai-overview) {
+	// Fill the available width in every layout context. WordPress flex Group
+	// blocks default their children to size-to-content (align-items is not
+	// `stretch`), which otherwise collapses the block to its intrinsic width when
+	// placed alongside e.g. a disclaimer paragraph. width:100% keeps it full-width
+	// in flex/grid parents while remaining a no-op in normal block flow.
+	width: 100%;
+	box-sizing: border-box;
 	// Theme-aware tokens (override these from your theme to re-skin the block).
 	--hamelp-accent: var(--wp--preset--color--primary, #1571da);
 	--hamelp-on-accent: var(--wp--preset--color--base, #fff);
@@ -25,6 +32,14 @@
 	// input + button look identical across both blocks).
 	--hamelp-radius: 3px;
 	--hamelp-font-weight: 600;
+	// Send button size, fully fluid with NO @media breakpoint (avoids colliding
+	// with the theme's breakpoints). Inverse clamp (negative vw coefficient) so
+	// the touch target GROWS as the viewport shrinks: 44px on phones (≤360px)
+	// easing down to 40px on wide screens (≥640px). Everything else (textarea
+	// min-height, right padding, bottom padding) derives from this token so the
+	// ChatGPT-style inset and single-line text position stay consistent at every
+	// width without special-casing.
+	--hamelp-btn-size: clamp(40px, calc(49.14px - 1.43vw), 44px);
 	--hamelp-button-bg: var(--hamelp-accent);
 	// Hover shade derived from the button color; the plain background
 	// declaration below wins on engines without color-mix() support.
@@ -41,8 +56,13 @@
 }
 
 :where(.hamelp-ai-overview__input-row) {
+	// Positioning context for the send button, which is taken out of flow and
+	// floated inside the field's bottom-right corner (ChatGPT-style inset). The
+	// field's own border/background/radius stay driven by the textarea's theme
+	// variables — this container adds no matte of its own.
+	position: relative;
+	// Still a flex row so the textarea fills the full width.
 	display: flex;
-	gap: 0.5rem;
 }
 
 // "Continue the previous conversation" toggle (conversation mode only).
@@ -57,7 +77,13 @@
 
 :where(.hamelp-ai-overview__input) {
 	flex: 1;
-	padding: 0.75rem;
+	box-sizing: border-box;
+	// Reserve room on the right so typed text never runs under the inset send
+	// button (right = btn size + 1rem to clear the button plus a small gap). The
+	// vertical padding is SYMMETRIC (top/bottom both 0.75rem) so that, combined
+	// with align-content: center below, the single line centers cleanly in the
+	// content box regardless of the button size or the theme's line-height.
+	padding: 0.75rem calc(var(--hamelp-btn-size) + 1rem) 0.75rem 0.75rem;
 	border: 1px solid var(--hamelp-border);
 	border-radius: var(--hamelp-radius, 3px);
 	background: var(--hamelp-surface);
@@ -68,9 +94,20 @@
 	font-family: inherit;
 	line-height: 1.5;
 	field-sizing: content;
-	min-height: 1lh;
+	// Minimum height sized so the inset send button clears equal ~8px gaps on
+	// every side in the single-line state: button height + 2 × the button's
+	// corner inset (0.5rem each). field-sizing still grows the field past this
+	// as text wraps, at which point the top gap widens.
+	min-height: calc(var(--hamelp-btn-size) + 1rem);
 	max-height: 8lh;
 	resize: none;
+	// Vertically CENTER the single line of text within the inflated min-height.
+	// With symmetric vertical padding above, centering is metric-robust: the line
+	// stays visually centered independent of the theme's font/line-height (a
+	// bottom-aligned approach drifts too low under some themes). Once the content
+	// exceeds min-height (multi-line), align-content has no effect, so wrapped
+	// text still grows top-anchored as expected (no text under the inset button).
+	align-content: center;
 }
 
 // Focus ring matches the button and the search box input (outline, 2px offset).
@@ -79,20 +116,54 @@
 	outline-offset: 2px;
 }
 
+// Small muted helper text directly under the input (e.g. "Shift + Enter で改行").
+// Muted via opacity so it inherits and adapts to any theme's text color.
+:where(.hamelp-ai-overview__hint) {
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.4;
+	text-align: right;
+	opacity: 0.6;
+}
+
+// Hide the hint on touch devices, where Shift+Enter is meaningless without a
+// physical keyboard. Device-CAPABILITY query (coarse pointer + no hover),
+// deliberately NOT a width breakpoint, to avoid colliding with theme breakpoints.
+@media (hover: none) and (pointer: coarse) {
+	:where(.hamelp-ai-overview__hint) {
+		display: none;
+	}
+}
+
 :where(.hamelp-ai-overview__button) {
-	padding: 0.75rem 1.5rem;
+	// Fixed-size circular icon button (ChatGPT-style), floated inside the field's
+	// bottom-right corner. The constant bottom offset keeps it pinned to the
+	// bottom as the textarea grows, instead of riding up with the content.
+	position: absolute;
+	right: 0.5rem;
+	bottom: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--hamelp-btn-size);
+	height: var(--hamelp-btn-size);
+	padding: 0;
 	border: 1px solid transparent;
-	border-radius: var(--hamelp-radius, 3px);
+	border-radius: 50%;
 	background: var(--hamelp-button-bg, #1571da);
+	background: linear-gradient(135deg, var(--hamelp-button-bg, #1571da), var(--hamelp-accent-hover));
 	color: var(--hamelp-on-accent);
-	font-size: 1rem;
-	font-weight: var(--hamelp-font-weight, 600);
 	cursor: pointer;
-	transition: background 0.2s ease;
+	transition: opacity 0.2s ease;
+}
+
+:where(.hamelp-ai-overview__button-icon) {
+	width: 20px;
+	height: 20px;
 }
 
 :where(.hamelp-ai-overview__button:hover) {
-	background: var(--hamelp-accent-hover);
+	opacity: 0.9;
 }
 
 :where(.hamelp-ai-overview__button:focus-visible) {
@@ -103,6 +174,21 @@
 :where(.hamelp-ai-overview__button:disabled) {
 	opacity: 0.5;
 	cursor: wait;
+}
+
+// WordPress-standard visually-hidden label: the button shows only the ↑ icon,
+// while the configurable button text stays available to screen readers.
+:where(.hamelp-ai-overview .screen-reader-text) {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	border: 0;
+	word-wrap: normal !important;
 }
 
 // Conversation thread: question/answer turns stack from top to bottom,
@@ -204,10 +290,11 @@
 	text-decoration: underline;
 }
 
-// Editor preview styles.
+// Editor preview styles. Mirrors the front-end inset so the block preview shows
+// the send button floated inside the field's bottom-right corner.
 :where(.hamelp-ai-overview__preview) {
+	position: relative;
 	display: flex;
-	gap: 0.5rem;
 }
 
 :where(.hamelp-ai-overview__preview textarea),
@@ -215,11 +302,22 @@
 	opacity: 0.7;
 }
 
-// Keep the editor preview textarea a single line (non-interactive preview).
+// Keep the editor preview textarea a single line (non-interactive preview) and
+// reserve the same right padding so the inset button never overlaps text.
 :where(.hamelp-ai-overview__preview textarea) {
+	flex: 1;
+	box-sizing: border-box;
+	// Mirror the front-end textarea padding (symmetric vertical padding) so the
+	// inset button and the centered single line stay in the same place (see that
+	// rule).
+	padding: 0.75rem calc(var(--hamelp-btn-size) + 1rem) 0.75rem 0.75rem;
 	resize: none;
 	field-sizing: content;
-	min-height: 1lh;
+	// Match the front-end min-height so the inset send button clears equal gaps
+	// on every side in the single-line state (see the front-end textarea rule).
+	min-height: calc(var(--hamelp-btn-size) + 1rem);
+	// Match the front-end vertically-centered single line of text.
+	align-content: center;
 }
 
 :where(.hamelp-ai-overview__note) {

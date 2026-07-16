@@ -17,7 +17,7 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
  * @return {JSX.Element} Block editor component.
  */
 export default function Edit( { attributes, setAttributes } ) {
-	const { placeholder, buttonText, showSources } = attributes;
+	const { placeholder, buttonText, hintText, showSources } = attributes;
 
 	return (
 		<>
@@ -31,10 +31,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 					/>
 					<TextControl
-						label={ __( 'Button Text', 'hamelp' ) }
+						label={ __(
+							'送信ボタンのラベル（スクリーンリーダー用）',
+							'hamelp'
+						) }
+						help={ __(
+							'フロントエンドには↑アイコンのみ表示され、この文言はスクリーンリーダーの読み上げ用ラベルとして使われます。',
+							'hamelp'
+						) }
 						value={ buttonText }
 						onChange={ ( value ) =>
 							setAttributes( { buttonText: value } )
+						}
+					/>
+					<TextControl
+						label={ __( '入力欄下の補助テキスト', 'hamelp' ) }
+						help={ __(
+							'Shift+Enterで改行できることの案内などに。空にすると非表示。スマートフォン等のタッチ端末では自動的に非表示になります。',
+							'hamelp'
+						) }
+						value={ hintText }
+						onChange={ ( value ) =>
+							setAttributes( { hintText: value } )
 						}
 					/>
 					<ToggleControl
@@ -49,8 +67,33 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...useBlockProps( { className: 'hamelp-ai-overview' } ) }>
 				<div className="hamelp-ai-overview__preview">
 					<textarea placeholder={ placeholder } disabled />
-					<button disabled>{ buttonText }</button>
+					<button className="hamelp-ai-overview__button" disabled>
+						<svg
+							className="hamelp-ai-overview__button-icon"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							aria-hidden="true"
+							focusable="false"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M12 19V5M6 11l6-6 6 6"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+						</svg>
+						<span className="screen-reader-text">
+							{ buttonText }
+						</span>
+					</button>
 				</div>
+				{ hintText && (
+					<p className="hamelp-ai-overview__hint">{ hintText }</p>
+				) }
 				<p className="hamelp-ai-overview__note">
 					{ __( 'AI Overview - Preview', 'hamelp' ) }
 				</p>
