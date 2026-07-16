@@ -83,6 +83,12 @@
 	min-height: calc(40px + 1rem);
 	max-height: 8lh;
 	resize: none;
+	// Vertically centre the single line of text within the inflated min-height
+	// (the min-height is padded out to fit the inset circular button, so without
+	// this the extra height falls entirely below the top-anchored text). Once
+	// the content exceeds min-height (multi-line), align-content has no effect,
+	// so wrapped text still grows top-anchored as expected.
+	align-content: center;
 }
 
 // Focus ring matches the button and the search box input (outline, 2px offset).
@@ -269,6 +275,8 @@
 	// Match the front-end min-height so the inset send button clears equal gaps
 	// on every side in the single-line state (see the front-end textarea rule).
 	min-height: calc(40px + 1rem);
+	// Match the front-end vertical centring of the single line of text.
+	align-content: center;
 }
 
 // Mobile touch-target bump. Below 600px the circular send button grows to the
