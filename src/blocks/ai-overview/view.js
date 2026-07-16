@@ -61,6 +61,16 @@ document.querySelectorAll( '.hamelp-ai-overview' ).forEach( ( container ) => {
 		'.hamelp-ai-overview__continue-toggle'
 	);
 
+	// ChatGPT-style submit: Enter sends the question, Shift+Enter inserts a
+	// newline. `isComposing` guards against IME conversion-confirm (e.g. Japanese
+	// input), which also fires Enter but must not submit.
+	input.addEventListener( 'keydown', ( e ) => {
+		if ( e.key === 'Enter' && ! e.isComposing && ! e.shiftKey ) {
+			e.preventDefault();
+			form.requestSubmit();
+		}
+	} );
+
 	// In-memory conversation history: [{ role: 'user'|'assistant', content }].
 	const history = [];
 	// Server-issued conversation id (only when saving is enabled). Sent back on
