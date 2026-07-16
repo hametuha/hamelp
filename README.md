@@ -3,7 +3,7 @@
 Contributors: tarosky, hametuha, Takahashi_Fumiki, bissy    
 Tags: faq,help  
 Tested up to: 7.0  
-Stable Tag: 2.4.2  
+Stable Tag: 2.4.3  
 License: GPL 3.0 or later  
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -112,6 +112,10 @@ You can contribute to our github repo. Any [issues](https://github.com/tarosky/h
 ## Changelog
 
 For full release notes of each version, see [GitHub Releases](https://github.com/tarosky/hamelp/releases).
+
+### 2.4.3
+
+- Fix the AI Overview send button appearing as a horizontal ellipse on themes that set a button min-width. The button's width is now constrained (complementing the height fix in 2.4.2) so it stays a circle regardless of theme styles.
 
 ### 2.4.2
 
