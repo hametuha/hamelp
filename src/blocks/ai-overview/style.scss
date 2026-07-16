@@ -41,11 +41,13 @@
 }
 
 :where(.hamelp-ai-overview__input-row) {
+	// Positioning context for the send button, which is taken out of flow and
+	// floated inside the field's bottom-right corner (ChatGPT-style inset). The
+	// field's own border/background/radius stay driven by the textarea's theme
+	// variables — this container adds no matte of its own.
+	position: relative;
+	// Still a flex row so the textarea fills the full width.
 	display: flex;
-	// Pin the circular send button to the bottom of the row so it stays at the
-	// bottom-right corner as the textarea grows, instead of stretching to match.
-	align-items: flex-end;
-	gap: 0.5rem;
 }
 
 // "Continue the previous conversation" toggle (conversation mode only).
@@ -60,7 +62,10 @@
 
 :where(.hamelp-ai-overview__input) {
 	flex: 1;
-	padding: 0.75rem;
+	box-sizing: border-box;
+	// Reserve room on the right so typed text never runs under the inset send
+	// button (40px circle at right: 0.5rem, plus a small gap).
+	padding: 0.75rem 3.25rem 0.75rem 0.75rem;
 	border: 1px solid var(--hamelp-border);
 	border-radius: var(--hamelp-radius, 3px);
 	background: var(--hamelp-surface);
@@ -83,11 +88,13 @@
 }
 
 :where(.hamelp-ai-overview__button) {
-	// Fixed-size circular icon button (ChatGPT-style). align-self: flex-end keeps
-	// it pinned to the bottom-right so it never stretches with the textarea.
+	// Fixed-size circular icon button (ChatGPT-style), floated inside the field's
+	// bottom-right corner. The constant bottom offset keeps it pinned to the
+	// bottom as the textarea grows, instead of riding up with the content.
+	position: absolute;
+	right: 0.5rem;
+	bottom: 0.5rem;
 	display: flex;
-	flex: none;
-	align-self: flex-end;
 	align-items: center;
 	justify-content: center;
 	width: 40px;
@@ -235,10 +242,11 @@
 	text-decoration: underline;
 }
 
-// Editor preview styles.
+// Editor preview styles. Mirrors the front-end inset so the block preview shows
+// the send button floated inside the field's bottom-right corner.
 :where(.hamelp-ai-overview__preview) {
+	position: relative;
 	display: flex;
-	gap: 0.5rem;
 }
 
 :where(.hamelp-ai-overview__preview textarea),
@@ -246,8 +254,12 @@
 	opacity: 0.7;
 }
 
-// Keep the editor preview textarea a single line (non-interactive preview).
+// Keep the editor preview textarea a single line (non-interactive preview) and
+// reserve the same right padding so the inset button never overlaps text.
 :where(.hamelp-ai-overview__preview textarea) {
+	flex: 1;
+	box-sizing: border-box;
+	padding: 0.75rem 3.25rem 0.75rem 0.75rem;
 	resize: none;
 	field-sizing: content;
 	min-height: 1lh;
