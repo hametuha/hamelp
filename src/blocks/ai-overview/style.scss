@@ -73,10 +73,10 @@
 	box-sizing: border-box;
 	// Reserve room on the right so typed text never runs under the inset send
 	// button (right = btn size + 1rem to clear the button plus a small gap). The
-	// bottom padding grows with the button ((btn − 40px) + 0.75rem) so the
-	// bottom-aligned single line keeps a consistent vertical position as the
-	// button size changes fluidly; top/left stay 0.75rem.
-	padding: 0.75rem calc(var(--hamelp-btn-size) + 1rem) calc(var(--hamelp-btn-size) - 40px + 0.75rem) 0.75rem;
+	// vertical padding is SYMMETRIC (top/bottom both 0.75rem) so that, combined
+	// with align-content: center below, the single line centers cleanly in the
+	// content box regardless of the button size or the theme's line-height.
+	padding: 0.75rem calc(var(--hamelp-btn-size) + 1rem) 0.75rem 0.75rem;
 	border: 1px solid var(--hamelp-border);
 	border-radius: var(--hamelp-radius, 3px);
 	background: var(--hamelp-surface);
@@ -94,13 +94,13 @@
 	min-height: calc(var(--hamelp-btn-size) + 1rem);
 	max-height: 8lh;
 	resize: none;
-	// Bottom-align the single line of text within the inflated min-height so it
-	// sits slightly lower than centre ("下寄せ"): the line's bottom gap equals
-	// padding-bottom (0.75rem ≈ 12px), matching the left text inset for a
-	// balanced feel, while the top gap stays larger. Once the content exceeds
-	// min-height (multi-line), align-content has no effect, so wrapped text still
-	// grows top-anchored as expected (no text under the inset button).
-	align-content: end;
+	// Vertically CENTER the single line of text within the inflated min-height.
+	// With symmetric vertical padding above, centering is metric-robust: the line
+	// stays visually centered independent of the theme's font/line-height (a
+	// bottom-aligned approach drifts too low under some themes). Once the content
+	// exceeds min-height (multi-line), align-content has no effect, so wrapped
+	// text still grows top-anchored as expected (no text under the inset button).
+	align-content: center;
 }
 
 // Focus ring matches the button and the search box input (outline, 2px offset).
@@ -281,16 +281,17 @@
 :where(.hamelp-ai-overview__preview textarea) {
 	flex: 1;
 	box-sizing: border-box;
-	// Mirror the front-end textarea padding so the inset button and the
-	// bottom-aligned single line stay in the same place (see that rule).
-	padding: 0.75rem calc(var(--hamelp-btn-size) + 1rem) calc(var(--hamelp-btn-size) - 40px + 0.75rem) 0.75rem;
+	// Mirror the front-end textarea padding (symmetric vertical padding) so the
+	// inset button and the centered single line stay in the same place (see that
+	// rule).
+	padding: 0.75rem calc(var(--hamelp-btn-size) + 1rem) 0.75rem 0.75rem;
 	resize: none;
 	field-sizing: content;
 	// Match the front-end min-height so the inset send button clears equal gaps
 	// on every side in the single-line state (see the front-end textarea rule).
 	min-height: calc(var(--hamelp-btn-size) + 1rem);
-	// Match the front-end bottom-aligned ("下寄せ") single line of text.
-	align-content: end;
+	// Match the front-end vertically-centered single line of text.
+	align-content: center;
 }
 
 :where(.hamelp-ai-overview__note) {
