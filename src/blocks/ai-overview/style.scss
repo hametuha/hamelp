@@ -112,9 +112,10 @@
 // Small muted helper text directly under the input (e.g. "Shift + Enter で改行").
 // Muted via opacity so it inherits and adapts to any theme's text color.
 :where(.hamelp-ai-overview__hint) {
-	margin: 0.375rem 0 0 0.75rem;
-	font-size: 0.8em;
+	margin: 0;
+	font-size: 12px;
 	line-height: 1.4;
+	text-align: right;
 	opacity: 0.6;
 }
 
