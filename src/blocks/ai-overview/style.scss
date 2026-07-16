@@ -109,6 +109,24 @@
 	outline-offset: 2px;
 }
 
+// Small muted helper text directly under the input (e.g. "Shift + Enter で改行").
+// Muted via opacity so it inherits and adapts to any theme's text color.
+:where(.hamelp-ai-overview__hint) {
+	margin: 0.375rem 0 0 0.75rem;
+	font-size: 0.8em;
+	line-height: 1.4;
+	opacity: 0.6;
+}
+
+// Hide the hint on touch devices, where Shift+Enter is meaningless without a
+// physical keyboard. Device-CAPABILITY query (coarse pointer + no hover),
+// deliberately NOT a width breakpoint, to avoid colliding with theme breakpoints.
+@media (hover: none) and (pointer: coarse) {
+	:where(.hamelp-ai-overview__hint) {
+		display: none;
+	}
+}
+
 :where(.hamelp-ai-overview__button) {
 	// Fixed-size circular icon button (ChatGPT-style), floated inside the field's
 	// bottom-right corner. The constant bottom offset keeps it pinned to the

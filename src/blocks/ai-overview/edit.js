@@ -17,7 +17,7 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
  * @return {JSX.Element} Block editor component.
  */
 export default function Edit( { attributes, setAttributes } ) {
-	const { placeholder, buttonText, showSources } = attributes;
+	const { placeholder, buttonText, hintText, showSources } = attributes;
 
 	return (
 		<>
@@ -42,6 +42,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ buttonText }
 						onChange={ ( value ) =>
 							setAttributes( { buttonText: value } )
+						}
+					/>
+					<TextControl
+						label={ __( '入力欄下の補助テキスト', 'hamelp' ) }
+						help={ __(
+							'Shift+Enterで改行できることの案内などに。空にすると非表示。スマートフォン等のタッチ端末では自動的に非表示になります。',
+							'hamelp'
+						) }
+						value={ hintText }
+						onChange={ ( value ) =>
+							setAttributes( { hintText: value } )
 						}
 					/>
 					<ToggleControl
@@ -80,6 +91,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						</span>
 					</button>
 				</div>
+				{ hintText && (
+					<p className="hamelp-ai-overview__hint">{ hintText }</p>
+				) }
 				<p className="hamelp-ai-overview__note">
 					{ __( 'AI Overview - Preview', 'hamelp' ) }
 				</p>

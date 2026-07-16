@@ -297,6 +297,7 @@ function hamelp_render_search_box( $args = [] ) {
  *
  *     @type string $placeholder   Input placeholder text. Default 'Enter your question...'.
  *     @type string $button_text   Submit button text. Default 'Ask AI'.
+ *     @type string $hint_text     Helper text shown below the input (empty = hidden). Default 'Shift + Enter で改行'.
  *     @type bool   $show_sources  Whether to show source FAQ links. Default true.
  *     @type string $wrapper_attrs Pre-built wrapper attributes string (used internally by block render).
  * }
@@ -313,6 +314,7 @@ function hamelp_render_ai_overview( $args = [] ) {
 		[
 			'placeholder'   => __( 'Enter your question...', 'hamelp' ),
 			'button_text'   => __( 'Ask AI', 'hamelp' ),
+			'hint_text'     => __( 'Shift + Enter で改行', 'hamelp' ),
 			'show_sources'  => true,
 			'wrapper_attrs' => '',
 		]
@@ -352,23 +354,41 @@ function hamelp_render_ai_overview( $args = [] ) {
 		);
 	}
 
+	// Optional helper text below the field (e.g. "Shift + Enter で改行"). When set,
+	// it is associated with the textarea via aria-describedby; empty = not rendered.
+	$hint_text   = trim( (string) $args['hint_text'] );
+	$hint_html   = '';
+	$hint_attr   = '';
+	if ( '' !== $hint_text ) {
+		$hint_id   = wp_unique_id( 'hamelp-ai-overview-' ) . '-hint';
+		$hint_html = sprintf(
+			'<p class="hamelp-ai-overview__hint" id="%1$s">%2$s</p>',
+			esc_attr( $hint_id ),
+			esc_html( $hint_text )
+		);
+		$hint_attr = sprintf( ' aria-describedby="%s"', esc_attr( $hint_id ) );
+	}
+
 	return sprintf(
 		'<div %1$s>
 	<div class="hamelp-ai-overview__thread" aria-live="polite"></div>
 	<form class="hamelp-ai-overview__form">
 		%2$s
 		<div class="hamelp-ai-overview__input-row">
-			<textarea class="hamelp-ai-overview__input" placeholder="%3$s" required></textarea>
+			<textarea class="hamelp-ai-overview__input" placeholder="%3$s"%5$s required></textarea>
 			<button type="submit" class="hamelp-ai-overview__button">
 				<svg class="hamelp-ai-overview__button-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path d="M12 19V5M6 11l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 				<span class="screen-reader-text">%4$s</span>
 			</button>
 		</div>
+		%6$s
 	</form>
 </div>',
 		$args['wrapper_attrs'],
 		$continue_toggle, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_html__ above.
 		esc_attr( $args['placeholder'] ),
-		esc_html( $args['button_text'] )
+		esc_html( $args['button_text'] ),
+		$hint_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr above.
+		$hint_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_html/esc_attr above.
 	);
 }
