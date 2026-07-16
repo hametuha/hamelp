@@ -76,7 +76,11 @@
 	font-family: inherit;
 	line-height: 1.5;
 	field-sizing: content;
-	min-height: 1lh;
+	// Minimum height sized so the inset send button clears equal gaps on every
+	// side in the single-line state: button height (40px) + 2 × the button's
+	// corner inset (0.5rem each) = ~56px border-box. field-sizing still grows
+	// the field past this as text wraps, at which point the top gap widens.
+	min-height: calc(40px + 1rem);
 	max-height: 8lh;
 	resize: none;
 }
@@ -262,7 +266,9 @@
 	padding: 0.75rem 3.25rem 0.75rem 0.75rem;
 	resize: none;
 	field-sizing: content;
-	min-height: 1lh;
+	// Match the front-end min-height so the inset send button clears equal gaps
+	// on every side in the single-line state (see the front-end textarea rule).
+	min-height: calc(40px + 1rem);
 }
 
 :where(.hamelp-ai-overview__note) {
