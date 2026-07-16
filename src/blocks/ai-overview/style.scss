@@ -25,6 +25,14 @@
 	// input + button look identical across both blocks).
 	--hamelp-radius: 3px;
 	--hamelp-font-weight: 600;
+	// Send button size, fully fluid with NO @media breakpoint (avoids colliding
+	// with the theme's breakpoints). Inverse clamp (negative vw coefficient) so
+	// the touch target GROWS as the viewport shrinks: 44px on phones (≤360px)
+	// easing down to 40px on wide screens (≥640px). Everything else (textarea
+	// min-height, right padding, bottom padding) derives from this token so the
+	// ChatGPT-style inset and single-line text position stay consistent at every
+	// width without special-casing.
+	--hamelp-btn-size: clamp(40px, calc(49.14px - 1.43vw), 44px);
 	--hamelp-button-bg: var(--hamelp-accent);
 	// Hover shade derived from the button color; the plain background
 	// declaration below wins on engines without color-mix() support.
@@ -64,8 +72,11 @@
 	flex: 1;
 	box-sizing: border-box;
 	// Reserve room on the right so typed text never runs under the inset send
-	// button (40px circle at right: 0.5rem, plus a small gap).
-	padding: 0.75rem 3.25rem 0.75rem 0.75rem;
+	// button (right = btn size + 1rem to clear the button plus a small gap). The
+	// bottom padding grows with the button ((btn − 40px) + 0.75rem) so the
+	// bottom-aligned single line keeps a consistent vertical position as the
+	// button size changes fluidly; top/left stay 0.75rem.
+	padding: 0.75rem calc(var(--hamelp-btn-size) + 1rem) calc(var(--hamelp-btn-size) - 40px + 0.75rem) 0.75rem;
 	border: 1px solid var(--hamelp-border);
 	border-radius: var(--hamelp-radius, 3px);
 	background: var(--hamelp-surface);
@@ -76,11 +87,11 @@
 	font-family: inherit;
 	line-height: 1.5;
 	field-sizing: content;
-	// Minimum height sized so the inset send button clears equal gaps on every
-	// side in the single-line state: button height (40px) + 2 × the button's
-	// corner inset (0.5rem each) = ~56px border-box. field-sizing still grows
-	// the field past this as text wraps, at which point the top gap widens.
-	min-height: calc(40px + 1rem);
+	// Minimum height sized so the inset send button clears equal ~8px gaps on
+	// every side in the single-line state: button height + 2 × the button's
+	// corner inset (0.5rem each). field-sizing still grows the field past this
+	// as text wraps, at which point the top gap widens.
+	min-height: calc(var(--hamelp-btn-size) + 1rem);
 	max-height: 8lh;
 	resize: none;
 	// Bottom-align the single line of text within the inflated min-height so it
@@ -108,8 +119,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 40px;
-	height: 40px;
+	width: var(--hamelp-btn-size);
+	height: var(--hamelp-btn-size);
 	padding: 0;
 	border: 1px solid transparent;
 	border-radius: 50%;
@@ -270,37 +281,16 @@
 :where(.hamelp-ai-overview__preview textarea) {
 	flex: 1;
 	box-sizing: border-box;
-	padding: 0.75rem 3.25rem 0.75rem 0.75rem;
+	// Mirror the front-end textarea padding so the inset button and the
+	// bottom-aligned single line stay in the same place (see that rule).
+	padding: 0.75rem calc(var(--hamelp-btn-size) + 1rem) calc(var(--hamelp-btn-size) - 40px + 0.75rem) 0.75rem;
 	resize: none;
 	field-sizing: content;
 	// Match the front-end min-height so the inset send button clears equal gaps
 	// on every side in the single-line state (see the front-end textarea rule).
-	min-height: calc(40px + 1rem);
+	min-height: calc(var(--hamelp-btn-size) + 1rem);
 	// Match the front-end bottom-aligned ("下寄せ") single line of text.
 	align-content: end;
-}
-
-// Mobile touch-target bump. Below 600px the circular send button grows to the
-// 44×44px accessibility minimum. To keep the ChatGPT-style inset even, the
-// textarea min-height grows in step: button (44px) + 2 × the 0.5rem corner
-// inset = 60px, so the single-line top/bottom gaps stay 8px each. The right
-// padding widens so wrapped text still clears the now-44px button (44px + the
-// 0.5rem right inset + a small gap ≈ 3.5rem). Button offsets stay unchanged.
-@media (max-width: 600px) {
-	:where(.hamelp-ai-overview__button) {
-		width: 44px;
-		height: 44px;
-	}
-
-	:where(.hamelp-ai-overview__input) {
-		min-height: calc(44px + 1rem);
-		padding-right: 3.5rem;
-	}
-
-	:where(.hamelp-ai-overview__preview textarea) {
-		min-height: calc(44px + 1rem);
-		padding-right: 3.5rem;
-	}
 }
 
 :where(.hamelp-ai-overview__note) {
