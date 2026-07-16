@@ -1,9 +1,9 @@
 # PubPla AI Help Center
 
-Contributors: tarosky, hametuha, Takahashi_Fumiki    
+Contributors: tarosky, hametuha, Takahashi_Fumiki, bissy    
 Tags: faq,help  
 Tested up to: 7.0  
-Stable Tag: 2.4.0  
+Stable Tag: 2.4.1  
 License: GPL 3.0 or later  
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -112,6 +112,10 @@ You can contribute to our github repo. Any [issues](https://github.com/tarosky/h
 ## Changelog
 
 For full release notes of each version, see [GitHub Releases](https://github.com/tarosky/hamelp/releases).
+
+### 2.4.1
+
+- Redesign the AI Overview question box as a ChatGPT-style auto-growing **textarea** with a circular send button inset at the bottom-right. Submit with **Enter** (Shift+Enter for a newline), with IME composition handled. Adds accessible labels and focus handling, a helper hint, and a responsive full-width layout.
 
 ### 2.4.0
 
