@@ -15,6 +15,13 @@
  */
 
 :where(.hamelp-ai-overview) {
+	// Fill the available width in every layout context. WordPress flex Group
+	// blocks default their children to size-to-content (align-items is not
+	// `stretch`), which otherwise collapses the block to its intrinsic width when
+	// placed alongside e.g. a disclaimer paragraph. width:100% keeps it full-width
+	// in flex/grid parents while remaining a no-op in normal block flow.
+	width: 100%;
+	box-sizing: border-box;
 	// Theme-aware tokens (override these from your theme to re-skin the block).
 	--hamelp-accent: var(--wp--preset--color--primary, #1571da);
 	--hamelp-on-accent: var(--wp--preset--color--base, #fff);
