@@ -31,7 +31,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 					/>
 					<TextControl
-						label={ __( 'Button Text', 'hamelp' ) }
+						label={ __(
+							'送信ボタンのラベル（スクリーンリーダー用）',
+							'hamelp'
+						) }
+						help={ __(
+							'フロントエンドには↑アイコンのみ表示され、この文言はスクリーンリーダーの読み上げ用ラベルとして使われます。',
+							'hamelp'
+						) }
 						value={ buttonText }
 						onChange={ ( value ) =>
 							setAttributes( { buttonText: value } )
@@ -49,7 +56,29 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...useBlockProps( { className: 'hamelp-ai-overview' } ) }>
 				<div className="hamelp-ai-overview__preview">
 					<textarea placeholder={ placeholder } disabled />
-					<button disabled>{ buttonText }</button>
+					<button className="hamelp-ai-overview__button" disabled>
+						<svg
+							className="hamelp-ai-overview__button-icon"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							aria-hidden="true"
+							focusable="false"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M12 19V5M6 11l6-6 6 6"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+						</svg>
+						<span className="screen-reader-text">
+							{ buttonText }
+						</span>
+					</button>
 				</div>
 				<p className="hamelp-ai-overview__note">
 					{ __( 'AI Overview - Preview', 'hamelp' ) }

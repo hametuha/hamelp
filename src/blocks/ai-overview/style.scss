@@ -42,7 +42,23 @@
 
 :where(.hamelp-ai-overview__input-row) {
 	display: flex;
+	// Pin the circular send button to the bottom of the row so it stays at the
+	// bottom-right corner as the textarea grows, instead of stretching to match.
+	align-items: flex-end;
 	gap: 0.5rem;
+	// Heavily rounded "pill" container (ChatGPT-style) holding the textarea and
+	// the circular send button as one control.
+	padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+	border: 1px solid var(--hamelp-border);
+	border-radius: 1.5rem;
+	background: var(--hamelp-surface);
+	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+// Focus ring moves to the container so the whole pill highlights on focus.
+:where(.hamelp-ai-overview__input-row:focus-within) {
+	outline: 2px solid var(--hamelp-accent);
+	outline-offset: 2px;
 }
 
 // "Continue the previous conversation" toggle (conversation mode only).
@@ -57,10 +73,11 @@
 
 :where(.hamelp-ai-overview__input) {
 	flex: 1;
-	padding: 0.75rem;
-	border: 1px solid var(--hamelp-border);
-	border-radius: var(--hamelp-radius, 3px);
-	background: var(--hamelp-surface);
+	// Borderless and transparent so the textarea blends into the pill container,
+	// which now provides the border, background and focus ring.
+	padding: 0.4rem 0;
+	border: 0;
+	background: transparent;
 	color: inherit;
 	font-size: 1rem;
 	// ChatGPT-style auto-growing textarea: start at one line and expand with the
@@ -73,26 +90,38 @@
 	resize: none;
 }
 
-// Focus ring matches the button and the search box input (outline, 2px offset).
+// The container (:focus-within) owns the focus ring, so suppress the textarea's.
 :where(.hamelp-ai-overview__input:focus-visible) {
-	outline: 2px solid var(--hamelp-accent);
-	outline-offset: 2px;
+	outline: none;
 }
 
 :where(.hamelp-ai-overview__button) {
-	padding: 0.75rem 1.5rem;
+	// Fixed-size circular icon button (ChatGPT-style). align-self: flex-end keeps
+	// it pinned to the bottom-right so it never stretches with the textarea.
+	display: flex;
+	flex: none;
+	align-self: flex-end;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
 	border: 1px solid transparent;
-	border-radius: var(--hamelp-radius, 3px);
+	border-radius: 50%;
 	background: var(--hamelp-button-bg, #1571da);
+	background: linear-gradient(135deg, var(--hamelp-button-bg, #1571da), var(--hamelp-accent-hover));
 	color: var(--hamelp-on-accent);
-	font-size: 1rem;
-	font-weight: var(--hamelp-font-weight, 600);
 	cursor: pointer;
-	transition: background 0.2s ease;
+	transition: opacity 0.2s ease;
+}
+
+:where(.hamelp-ai-overview__button-icon) {
+	width: 20px;
+	height: 20px;
 }
 
 :where(.hamelp-ai-overview__button:hover) {
-	background: var(--hamelp-accent-hover);
+	opacity: 0.9;
 }
 
 :where(.hamelp-ai-overview__button:focus-visible) {
@@ -103,6 +132,21 @@
 :where(.hamelp-ai-overview__button:disabled) {
 	opacity: 0.5;
 	cursor: wait;
+}
+
+// WordPress-standard visually-hidden label: the button shows only the ↑ icon,
+// while the configurable button text stays available to screen readers.
+:where(.hamelp-ai-overview .screen-reader-text) {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	border: 0;
+	word-wrap: normal !important;
 }
 
 // Conversation thread: question/answer turns stack from top to bottom,
