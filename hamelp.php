@@ -356,9 +356,9 @@ function hamelp_render_ai_overview( $args = [] ) {
 
 	// Optional helper text below the field (e.g. "Shift + Enter で改行"). When set,
 	// it is associated with the textarea via aria-describedby; empty = not rendered.
-	$hint_text   = trim( (string) $args['hint_text'] );
-	$hint_html   = '';
-	$hint_attr   = '';
+	$hint_text = trim( (string) $args['hint_text'] );
+	$hint_html = '';
+	$hint_attr = '';
 	if ( '' !== $hint_text ) {
 		$hint_id   = wp_unique_id( 'hamelp-ai-overview-' ) . '-hint';
 		$hint_html = sprintf(
