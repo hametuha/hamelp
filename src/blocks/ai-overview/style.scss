@@ -55,7 +55,10 @@
 	gap: 0.5rem;
 }
 
-:where(.hamelp-ai-overview__input-row) {
+// Layout-critical, so scoped (0,2,0) for theme-override resistance: the absolute
+// send button depends on this positioning context, and a theme `.wp-block-*`/
+// element rule at 0,0,0 could otherwise drop it, un-inset the button.
+.hamelp-ai-overview .hamelp-ai-overview__input-row {
 	// Positioning context for the send button, which is taken out of flow and
 	// floated inside the field's bottom-right corner (ChatGPT-style inset). The
 	// field's own border/background/radius stay driven by the textarea's theme
@@ -77,13 +80,6 @@
 
 :where(.hamelp-ai-overview__input) {
 	flex: 1;
-	box-sizing: border-box;
-	// Reserve room on the right so typed text never runs under the inset send
-	// button (right = btn size + 1rem to clear the button plus a small gap). The
-	// vertical padding is SYMMETRIC (top/bottom both 0.75rem) so that, combined
-	// with align-content: center below, the single line centers cleanly in the
-	// content box regardless of the button size or the theme's line-height.
-	padding: 0.75rem calc(var(--hamelp-btn-size) + 1rem) 0.75rem 0.75rem;
 	border: 1px solid var(--hamelp-border);
 	border-radius: var(--hamelp-radius, 3px);
 	background: var(--hamelp-surface);
@@ -93,13 +89,26 @@
 	// content (field-sizing) up to a cap so long input stays fully visible.
 	font-family: inherit;
 	line-height: 1.5;
+	max-height: 8lh;
+}
+
+// Box/layout props the inset depends on, scoped (0,2,0) for theme-override
+// resistance: a theme's `textarea`/`.wp-block-*` rule at 0,0,0 must not collapse
+// the reserved button space, the inflated min-height, or the centered line.
+.hamelp-ai-overview .hamelp-ai-overview__input {
+	box-sizing: border-box;
+	// Reserve room on the right so typed text never runs under the inset send
+	// button (right = btn size + 1rem to clear the button plus a small gap). The
+	// vertical padding is SYMMETRIC (top/bottom both 0.75rem) so that, combined
+	// with align-content: center below, the single line centers cleanly in the
+	// content box regardless of the button size or the theme's line-height.
+	padding: 0.75rem calc(var(--hamelp-btn-size) + 1rem) 0.75rem 0.75rem;
 	field-sizing: content;
 	// Minimum height sized so the inset send button clears equal ~8px gaps on
 	// every side in the single-line state: button height + 2 × the button's
 	// corner inset (0.5rem each). field-sizing still grows the field past this
 	// as text wraps, at which point the top gap widens.
 	min-height: calc(var(--hamelp-btn-size) + 1rem);
-	max-height: 8lh;
 	resize: none;
 	// Vertically CENTER the single line of text within the inflated min-height.
 	// With symmetric vertical padding above, centering is metric-robust: the line
@@ -135,7 +144,14 @@
 	}
 }
 
-:where(.hamelp-ai-overview__button) {
+// Structural/box/layout props scoped (0,2,0) for theme-override resistance.
+// Theme button rules (`.wp-block-button__link`, `form button[type=submit]`, bare
+// `button`) at 0,0,0–0,1,1 otherwise win and inflate the button into a big
+// rectangle (and can push the arrow out). min-height:0 + padding:0 NEUTRALIZE
+// theme-injected values; max-height:none guards against theme height caps.
+// Cosmetics (background/gradient, color, transition, :hover, focus color) stay
+// low-specificity in :where() below so themes can still re-skin them.
+.hamelp-ai-overview .hamelp-ai-overview__button {
 	// Fixed-size circular icon button (ChatGPT-style), floated inside the field's
 	// bottom-right corner. The constant bottom offset keeps it pinned to the
 	// bottom as the textarea grows, instead of riding up with the content.
@@ -143,23 +159,33 @@
 	right: 0.5rem;
 	bottom: 0.5rem;
 	display: flex;
+	flex: none;
 	align-items: center;
 	justify-content: center;
+	box-sizing: border-box;
 	width: var(--hamelp-btn-size);
 	height: var(--hamelp-btn-size);
+	min-height: 0;
+	max-height: none;
 	padding: 0;
-	border: 1px solid transparent;
 	border-radius: 50%;
+	line-height: 1;
+}
+
+// Keep the icon size enforced at the same specificity so a theme `button svg`
+// rule can't resize the arrow or push it out of the circle.
+.hamelp-ai-overview .hamelp-ai-overview__button-icon {
+	width: 20px;
+	height: 20px;
+}
+
+:where(.hamelp-ai-overview__button) {
+	border: 1px solid transparent;
 	background: var(--hamelp-button-bg, #1571da);
 	background: linear-gradient(135deg, var(--hamelp-button-bg, #1571da), var(--hamelp-accent-hover));
 	color: var(--hamelp-on-accent);
 	cursor: pointer;
 	transition: opacity 0.2s ease;
-}
-
-:where(.hamelp-ai-overview__button-icon) {
-	width: 20px;
-	height: 20px;
 }
 
 :where(.hamelp-ai-overview__button:hover) {
