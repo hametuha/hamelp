@@ -271,6 +271,29 @@
 	min-height: calc(40px + 1rem);
 }
 
+// Mobile touch-target bump. Below 600px the circular send button grows to the
+// 44×44px accessibility minimum. To keep the ChatGPT-style inset even, the
+// textarea min-height grows in step: button (44px) + 2 × the 0.5rem corner
+// inset = 60px, so the single-line top/bottom gaps stay 8px each. The right
+// padding widens so wrapped text still clears the now-44px button (44px + the
+// 0.5rem right inset + a small gap ≈ 3.5rem). Button offsets stay unchanged.
+@media (max-width: 600px) {
+	:where(.hamelp-ai-overview__button) {
+		width: 44px;
+		height: 44px;
+	}
+
+	:where(.hamelp-ai-overview__input) {
+		min-height: calc(44px + 1rem);
+		padding-right: 3.5rem;
+	}
+
+	:where(.hamelp-ai-overview__preview textarea) {
+		min-height: calc(44px + 1rem);
+		padding-right: 3.5rem;
+	}
+}
+
 :where(.hamelp-ai-overview__note) {
 	margin-top: 0.5rem;
 	font-size: 0.85em;
