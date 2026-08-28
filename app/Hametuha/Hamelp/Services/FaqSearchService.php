@@ -7,6 +7,7 @@
 
 namespace Hametuha\Hamelp\Services;
 
+use Hametuha\Hamelp\Hooks\PostType;
 use Hametuha\Hamelp\Hooks\Settings;
 use WordPress\AiClient\Messages\DTO\MessagePart;
 use WordPress\AiClient\Messages\DTO\ModelMessage;
@@ -128,11 +129,15 @@ class FaqSearchService {
 			];
 		}
 
-		// Build sources from cited IDs. Restricted to the accessible catalog so
-		// inaccessible FAQs are never surfaced even if the model cites them.
+		// Build sources from cited IDs. Restricted to the accessible catalog and
+		// to citable entries, so neither an inaccessible FAQ nor a non-published
+		// one is surfaced even if the model cites it anyway.
 		$cited   = $data['cited_ids'] ?? [];
 		$sources = [];
 		foreach ( $catalog as $item ) {
+			if ( ! FaqCatalogBuilder::is_citable( $item ) ) {
+				continue;
+			}
 			if ( in_array( $item['id'], $cited, true ) ) {
 				$sources[] = [
 					'id'    => $item['id'],
@@ -246,6 +251,10 @@ class FaqSearchService {
 	 * Used when rendering a stored conversation, where the in-memory catalog
 	 * is not available. Each ID is resolved to its current title and permalink.
 	 *
+	 * Only published posts are resolved: a post that has since been unpublished
+	 * (or that was never public and only fed the answer as background material)
+	 * must not leak its title or a permalink that would 404.
+	 *
 	 * @param int[] $cited_ids FAQ post IDs.
 	 * @return array[] List of `['id' => int, 'title' => string, 'url' => string]`.
 	 */
@@ -254,7 +263,10 @@ class FaqSearchService {
 		foreach ( $cited_ids as $id ) {
 			$id   = (int) $id;
 			$post = get_post( $id );
-			if ( ! $post ) {
+			if ( ! $post || 'publish' !== $post->post_status ) {
+				continue;
+			}
+			if ( ! PostType::get()->is_supported( $post->post_type ) ) {
 				continue;
 			}
 			$sources[] = [
@@ -320,16 +332,7 @@ class FaqSearchService {
 	 * @return string Context string for LLM.
 	 */
 	protected function build_full_context( array $catalog ): string {
-		$lines = [ 'Available FAQs (full content):' ];
-		foreach ( $catalog as $item ) {
-			$entry = sprintf( "\n[ID:%d] %s", $item['id'], $item['title'] );
-			if ( ! empty( $item['category'] ) ) {
-				$entry .= sprintf( ' (Category: %s)', $item['category'] );
-			}
-			$entry  .= "\n" . $item['content'];
-			$lines[] = $entry;
-		}
-		return implode( "\n", $lines );
+		return $this->build_context( $catalog, 'content', 'Available FAQs (full content):' );
 	}
 
 	/**
@@ -339,16 +342,45 @@ class FaqSearchService {
 	 * @return string Context string for LLM.
 	 */
 	protected function build_catalog_context( array $catalog ): string {
-		$lines = [ 'Available FAQs (title + summary):' ];
+		return $this->build_context( $catalog, 'excerpt', 'Available FAQs (title + summary):' );
+	}
+
+	/**
+	 * Render the catalog as LLM context.
+	 *
+	 * Citable entries are numbered so the model can cite them. Non-citable ones
+	 * (private posts opted into the catalog) go into a separate section *without
+	 * an ID*, which makes them structurally impossible to cite: the model never
+	 * learns a number to put in `cited_ids`.
+	 *
+	 * @param array[] $catalog FAQ catalog entries.
+	 * @param string  $field   Entry field to render, `content` or `excerpt`.
+	 * @param string  $heading Heading for the citable section.
+	 * @return string Context string for LLM.
+	 */
+	protected function build_context( array $catalog, string $field, string $heading ): string {
+		$citable    = [ $heading ];
+		$background = [];
 		foreach ( $catalog as $item ) {
-			$entry = sprintf( "\n[ID:%d] %s", $item['id'], $item['title'] );
+			$is_citable = FaqCatalogBuilder::is_citable( $item );
+			$entry      = $is_citable
+				? sprintf( "\n[ID:%d] %s", $item['id'], $item['title'] )
+				: "\n" . $item['title'];
 			if ( ! empty( $item['category'] ) ) {
 				$entry .= sprintf( ' (Category: %s)', $item['category'] );
 			}
-			$entry  .= "\n" . $item['excerpt'];
-			$lines[] = $entry;
+			$entry .= "\n" . ( $item[ $field ] ?? '' );
+			if ( $is_citable ) {
+				$citable[] = $entry;
+			} else {
+				$background[] = $entry;
+			}
 		}
-		return implode( "\n", $lines );
+		if ( $background ) {
+			array_unshift( $background, 'Background material (use it to answer, but it has no ID and MUST NOT be cited):' );
+			$citable[] = "\n" . implode( "\n", $background );
+		}
+		return implode( "\n", $citable );
 	}
 
 	/**
@@ -378,6 +410,7 @@ IMPORTANT RULES:
 - DO NOT include a separate "Related FAQ" or "参考FAQ" or "関連FAQ" section at the end.
 - The system will automatically display FAQ links based on the cited_ids you return.
 - Only include IDs of FAQs you actually reference in cited_ids.
+- Background material has no ID. Use it to answer, but never invent an ID for it and never cite it.
 - If no FAQ is relevant, provide a helpful answer with an empty cited_ids array.
 - Keep your response concise and helpful.
 - If earlier conversation turns are provided, use them as context and answer follow-up questions accordingly.

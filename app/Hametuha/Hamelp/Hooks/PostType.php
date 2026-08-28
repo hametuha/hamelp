@@ -39,8 +39,19 @@ class PostType extends Singleton {
 		add_action( 'current_screen', [ $this, 'flush_rules' ] );
 		// Register cron hook for background catalog rebuild.
 		FaqCatalogBuilder::register_cron();
-		// Schedule catalog rebuild on FAQ content changes.
-		add_action( 'save_post_faq', [ FaqCatalogBuilder::class, 'schedule_rebuild' ] );
+		// Schedule catalog rebuild on FAQ content changes. Hooked on the generic
+		// save_post because the supported post types are filterable, and because
+		// a status change (publish <-> private) must refresh the catalog too.
+		add_action(
+			'save_post',
+			function ( $post_id, $post ) {
+				if ( ! wp_is_post_revision( $post_id ) && $this->is_supported( $post->post_type ) ) {
+					FaqCatalogBuilder::schedule_rebuild();
+				}
+			},
+			10,
+			2
+		);
 		add_action(
 			'delete_post',
 			function ( $post_id ) {
@@ -52,7 +63,7 @@ class PostType extends Singleton {
 		add_action(
 			'set_object_terms',
 			function ( $object_id, $terms, $tt_ids, $taxonomy ) {
-				if ( $this->taxonomy === $taxonomy ) {
+				if ( in_array( $taxonomy, [ $this->taxonomy, CatalogTaxonomy::TAXONOMY ], true ) ) {
 					FaqCatalogBuilder::schedule_rebuild();
 				}
 			},
