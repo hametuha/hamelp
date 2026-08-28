@@ -204,9 +204,12 @@ class CatalogBuilderTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Background material must reach the LLM without an ID to cite.
+	 * Background material reaches the LLM with an ID, in its own section.
+	 *
+	 * It needs an ID so the model cites what it actually used instead of
+	 * displacing the citation onto an unrelated public FAQ.
 	 */
-	public function test_background_material_has_no_id_in_context() {
+	public function test_background_material_is_labelled_in_context() {
 		$public     = $this->create_faq( 'Public answer' );
 		$background = $this->create_faq( 'Internal answer', 'private', true );
 		$catalog    = $this->builder->rebuild();
@@ -217,10 +220,35 @@ class CatalogBuilderTest extends WP_UnitTestCase {
 		$context = $method->invoke( $service, $catalog );
 
 		$this->assertStringContainsString( sprintf( '[ID:%d]', $public ), $context );
-		$this->assertStringNotContainsString( sprintf( '[ID:%d]', $background ), $context );
-		// The text itself is still there: it feeds the answer.
+		$this->assertStringContainsString( sprintf( '[ID:%d]', $background ), $context );
 		$this->assertStringContainsString( 'Internal answer body', $context );
-		$this->assertStringContainsString( 'MUST NOT be cited', $context );
+		$this->assertStringContainsString( 'Background material', $context );
+		// The background section must come after the citable one.
+		$this->assertGreaterThan(
+			strpos( $context, sprintf( '[ID:%d]', $public ) ),
+			strpos( $context, 'Background material' )
+		);
+	}
+
+	/**
+	 * References the answer is not allowed to make are removed.
+	 */
+	public function test_uncited_references_are_stripped() {
+		$method = new ReflectionMethod( FaqSearchService::class, 'strip_uncited_references' );
+		$method->setAccessible( true );
+		$strip = function ( $answer, $allowed ) use ( $method ) {
+			return $method->invoke( null, $answer, $allowed );
+		};
+
+		// A citation the answer may keep.
+		$this->assertSame( 'See this [ID:10].', $strip( 'See this [ID:10].', [ 10 ] ) );
+		// Background material, access-filtered entries and hallucinated IDs.
+		$this->assertSame( 'See this.', $strip( 'See this [ID:99].', [ 10 ] ) );
+		$this->assertSame( 'See this.', $strip( 'See this[ID:99].', [] ) );
+		// A mixed group keeps only the allowed IDs.
+		$this->assertSame( 'Both [ID:10].', $strip( 'Both [ID:10, ID:99].', [ 10 ] ) );
+		// Line breaks around a stripped marker survive.
+		$this->assertSame( "One.\nTwo.", $strip( "One [ID:99].\nTwo.", [] ) );
 	}
 
 	/**
