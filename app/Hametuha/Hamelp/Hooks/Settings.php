@@ -411,9 +411,15 @@ class Settings extends Singleton {
 	 * Render settings page.
 	 */
 	public function render_page() {
-		$builder = new FaqCatalogBuilder();
-		$catalog = $builder->get_catalog();
-		$updated = $builder->get_last_updated();
+		$builder    = new FaqCatalogBuilder();
+		$catalog    = $builder->get_catalog();
+		$updated    = $builder->get_last_updated();
+		$background = array_filter(
+			$catalog,
+			function ( $item ) {
+				return ! FaqCatalogBuilder::is_citable( $item );
+			}
+		);
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'PubPla AI Help Center', 'hamelp' ); ?></h1>
@@ -440,6 +446,14 @@ class Settings extends Singleton {
 					esc_html__( 'Catalog entries: %d', 'hamelp' ),
 					count( $catalog )
 				);
+				if ( $background ) {
+					echo '<br>';
+					printf(
+						/* translators: %d: Number of non-public entries in the catalog. */
+						esc_html__( 'Of which background material: %d', 'hamelp' ),
+						count( $background )
+					);
+				}
 				if ( $updated ) {
 					$date = wp_date(
 						get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
@@ -461,6 +475,9 @@ class Settings extends Singleton {
 				<input type="hidden" name="action" value="<?php echo esc_attr( self::REBUILD_ACTION ); ?>">
 				<?php submit_button( __( 'Rebuild Catalog Now', 'hamelp' ), 'secondary', 'submit', false ); ?>
 			</form>
+			<p class="description">
+				<?php esc_html_e( 'Published posts are always in the catalog. A non-published post joins it when you check the default catalog in its "AI Catalog" box: its text is then used to answer everyone, but it is never shown as a source link.', 'hamelp' ); ?>
+			</p>
 
 			<hr>
 

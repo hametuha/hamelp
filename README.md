@@ -36,6 +36,28 @@ It uses the [wp-ai-client](https://github.com/WordPress/wp-ai-client) bundled wi
 
 You can configure AI behavior and rate limiting from **Settings > Help Center** in the admin panel. The settings page also includes a **Rebuild Catalog Now** button to manually refresh the FAQ catalog used as LLM context.
 
+#### The Catalog
+
+The catalog is the set of posts handed to the LLM as context. It is the union of several queries, merged and deduplicated by post ID:
+
+1.  Every **published** post of a supported post type. These can be cited, so they appear under **Sources** in an answer.
+2.  Every **private** post assigned to the default term of the **AI Catalog** taxonomy. These are *background material*: their text is used to answer everyone, but they are never cited and never linked. Use this for internal knowledge you do not want as a standalone public page.
+
+To add sources of your own — other post types, a taxonomy filter, a meta condition — use the `hamelp_catalog_sources` filter. Each source is a `get_posts()` argument array plus a `citable` flag; earlier sources win on duplicates.
+
+```php
+add_filter( 'hamelp_catalog_sources', function ( $sources ) {
+	$sources['pages'] = [
+		'args'    => [
+			'post_type'   => [ 'page' ],
+			'post_status' => [ 'publish' ],
+		],
+		'citable' => true,
+	];
+	return $sources;
+} );
+```
+
 #### Using the Block
 
 Add the **AI FAQ Overview** block in the block editor. The block has the following options:
