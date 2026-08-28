@@ -135,6 +135,15 @@ You can contribute to our github repo. Any [issues](https://github.com/tarosky/h
 
 For full release notes of each version, see [GitHub Releases](https://github.com/tarosky/hamelp/releases).
 
+### 2.5.0
+
+- The AI Overview catalog is now built from **multiple queries** instead of one, merged and deduplicated by post ID. A single query could not express "published OR (private AND opted in)", because `post_status` is always ANDed with the taxonomy and meta conditions.
+- Add the **AI Catalog** taxonomy. A **private** post assigned to its default term joins the catalog as *background material*: its text is used to answer every visitor, but it is never cited and never linked. Use it for internal knowledge you do not want to publish as a standalone page. Published posts stay in the catalog automatically and are unaffected.
+- Add the `hamelp_catalog_sources` filter so themes and plugins can add their own catalog sources — other post types, a taxonomy filter, a meta condition — each with a `citable` flag.
+- Fix citations pointing at the wrong page. When an answer drew on material that cannot be linked, the model would cite a topically similar published FAQ that did not actually contain the answer. An answer may now only reference sources that are really shown, and every other reference is removed from the answer text (this also removes the raw `[ID:123]` markers that a model occasionally invented).
+- Fix `Private:` appearing in front of a non-published post's title in the LLM context.
+- Rebuild the catalog when a post's **status** changes, and when its AI Catalog terms change.
+
 ### 2.4.3
 
 - Fix the AI Overview send button appearing as a horizontal ellipse on themes that set a button min-width. The button's width is now constrained (complementing the height fix in 2.4.2) so it stays a circle regardless of theme styles.

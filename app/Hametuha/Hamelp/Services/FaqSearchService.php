@@ -147,10 +147,14 @@ class FaqSearchService {
 			}
 		}
 
+		$source_ids = array_map( 'intval', wp_list_pluck( $sources, 'id' ) );
 		return [
-			'answer'    => self::normalize_answer_text( (string) $data['answer'] ),
+			'answer'    => self::strip_uncited_references(
+				self::normalize_answer_text( (string) $data['answer'] ),
+				$source_ids
+			),
 			'sources'   => $sources,
-			'cited_ids' => wp_list_pluck( $sources, 'id' ),
+			'cited_ids' => $source_ids,
 		];
 	}
 
@@ -348,10 +352,12 @@ class FaqSearchService {
 	/**
 	 * Render the catalog as LLM context.
 	 *
-	 * Citable entries are numbered so the model can cite them. Non-citable ones
-	 * (private posts opted into the catalog) go into a separate section *without
-	 * an ID*, which makes them structurally impossible to cite: the model never
-	 * learns a number to put in `cited_ids`.
+	 * Every entry gets an ID, background material included. Hiding the ID of a
+	 * non-citable entry does not remove the model's urge to cite something: it
+	 * displaces the citation onto a topically similar public FAQ that does not
+	 * actually contain the answer, which is worse than no citation at all. So
+	 * the model reports what it really used, and the server decides what to
+	 * show -- see `strip_uncited_references()`.
 	 *
 	 * @param array[] $catalog FAQ catalog entries.
 	 * @param string  $field   Entry field to render, `content` or `excerpt`.
@@ -362,25 +368,59 @@ class FaqSearchService {
 		$citable    = [ $heading ];
 		$background = [];
 		foreach ( $catalog as $item ) {
-			$is_citable = FaqCatalogBuilder::is_citable( $item );
-			$entry      = $is_citable
-				? sprintf( "\n[ID:%d] %s", $item['id'], $item['title'] )
-				: "\n" . $item['title'];
+			$entry = sprintf( "\n[ID:%d] %s", $item['id'], $item['title'] );
 			if ( ! empty( $item['category'] ) ) {
 				$entry .= sprintf( ' (Category: %s)', $item['category'] );
 			}
 			$entry .= "\n" . ( $item[ $field ] ?? '' );
-			if ( $is_citable ) {
+			if ( FaqCatalogBuilder::is_citable( $item ) ) {
 				$citable[] = $entry;
 			} else {
 				$background[] = $entry;
 			}
 		}
 		if ( $background ) {
-			array_unshift( $background, 'Background material (use it to answer, but it has no ID and MUST NOT be cited):' );
+			array_unshift( $background, 'Background material. Use it to answer and cite it by ID exactly like any other entry. It is not publicly linkable, so the system removes those citations before display -- that is expected, and it is never a reason to cite a different FAQ instead:' );
 			$citable[] = "\n" . implode( "\n", $background );
 		}
 		return implode( "\n", $citable );
+	}
+
+	/**
+	 * Remove `[ID:n]` markers the answer is not allowed to reference.
+	 *
+	 * Enforces one invariant: the answer text may only reference IDs that
+	 * survived into `sources`. That covers background material the model
+	 * legitimately cited, entries filtered out by access control, and IDs the
+	 * model simply made up -- all of which would otherwise be rendered as a raw
+	 * `[ID:123]` or, worse, silently point at the wrong page.
+	 *
+	 * @param string $answer  Answer text from the model.
+	 * @param int[]  $allowed IDs present in the final source list.
+	 * @return string
+	 */
+	protected static function strip_uncited_references( string $answer, array $allowed ): string {
+		$stripped = preg_replace_callback(
+			'/[ \t]*\[ID:\d+(?:,\s*ID:\d+)*\]/u',
+			function ( $matches ) use ( $allowed ) {
+				preg_match_all( '/ID:(\d+)/', $matches[0], $found );
+				$kept = array_values( array_intersect( array_map( 'intval', $found[1] ), $allowed ) );
+				if ( ! $kept ) {
+					return '';
+				}
+				return ' [' . implode(
+					', ',
+					array_map(
+						function ( $id ) {
+							return 'ID:' . $id;
+						},
+						$kept
+					)
+				) . ']';
+			},
+			$answer
+		);
+		return is_string( $stripped ) ? $stripped : $answer;
 	}
 
 	/**
@@ -410,7 +450,7 @@ IMPORTANT RULES:
 - DO NOT include a separate "Related FAQ" or "参考FAQ" or "関連FAQ" section at the end.
 - The system will automatically display FAQ links based on the cited_ids you return.
 - Only include IDs of FAQs you actually reference in cited_ids.
-- Background material has no ID. Use it to answer, but never invent an ID for it and never cite it.
+- NEVER cite an FAQ that does not itself contain the information you used. Do not offer a related FAQ as a substitute for a source you cannot link: citing nothing is correct and expected, and an empty cited_ids array is a valid answer.
 - If no FAQ is relevant, provide a helpful answer with an empty cited_ids array.
 - Keep your response concise and helpful.
 - If earlier conversation turns are provided, use them as context and answer follow-up questions accordingly.
