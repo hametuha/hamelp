@@ -32,12 +32,27 @@ class BlockDefaultI18nTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Skip a test when the blocks have not been built.
+	 *
+	 * Blocks are registered from `assets/blocks`, which is gitignored and built
+	 * by CI only in the asset job, so the PHPUnit job runs against a tree with
+	 * no built blocks at all.
+	 */
+	protected function skip_without_built_blocks() {
+		if ( ! is_dir( dirname( __DIR__ ) . '/assets/blocks' ) ) {
+			$this->markTestSkipped( 'Blocks are not built (run `npm run build:blocks`).' );
+		}
+	}
+
+	/**
 	 * The registered block types declare no default for translatable strings.
 	 *
 	 * Asserting against the registry (not the source tree) also catches a stale
-	 * build, since blocks are registered from the built `assets/blocks`.
+	 * build. The source tree is covered separately, so this can be skipped when
+	 * the blocks have not been built.
 	 */
 	public function test_registered_blocks_declare_no_translatable_defaults() {
+		$this->skip_without_built_blocks();
 		$registry = WP_Block_Type_Registry::get_instance();
 		foreach ( $this->translatable_attributes() as $block_name => $attributes ) {
 			$block = $registry->get_registered( $block_name );
@@ -120,6 +135,7 @@ class BlockDefaultI18nTest extends WP_UnitTestCase {
 	 * absent from `$attributes`, so the `??` fallback in render.php fires.
 	 */
 	public function test_block_render_falls_back_to_defaults() {
+		$this->skip_without_built_blocks();
 		$html = do_blocks( '<!-- wp:hamelp/ai-overview /-->' );
 		$this->assertStringContainsString( 'placeholder="Enter your question..."', $html );
 		$this->assertStringContainsString( 'Shift + Enter for a line break', $html );
