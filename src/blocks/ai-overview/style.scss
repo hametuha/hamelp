@@ -323,6 +323,41 @@
 	text-decoration: underline;
 }
 
+// Per-answer actions (copy). Kept quiet by default so it never competes with
+// the answer itself, and only gains contrast on hover/focus.
+:where(.hamelp-ai-overview__actions) {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 0.75rem;
+}
+
+:where(.hamelp-ai-overview__copy) {
+	padding: 0.25rem 0.75rem;
+	border: 1px solid rgba(0, 115, 170, 0.4);
+	border: 1px solid color-mix(in srgb, var(--hamelp-accent), transparent 60%);
+	border-radius: var(--hamelp-radius, 3px);
+	background: transparent;
+	color: var(--hamelp-accent);
+	font-size: 0.85em;
+	line-height: 1.6;
+	cursor: pointer;
+}
+
+:where(.hamelp-ai-overview__copy:hover) {
+	background: rgba(0, 115, 170, 0.08);
+	background: color-mix(in srgb, var(--hamelp-accent), transparent 92%);
+}
+
+:where(.hamelp-ai-overview__copy:focus-visible) {
+	outline: 2px solid var(--hamelp-accent);
+	outline-offset: 2px;
+}
+
+:where(.hamelp-ai-overview__copy.is-copied) {
+	background: var(--hamelp-accent);
+	color: var(--hamelp-on-accent, #fff);
+}
+
 // Editor preview styles. Mirrors the front-end inset so the block preview shows
 // the send button floated inside the field's bottom-right corner.
 :where(.hamelp-ai-overview__preview) {

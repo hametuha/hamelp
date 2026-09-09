@@ -16,7 +16,7 @@
 
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
-import { parseMarkdown, replaceIdReferences } from './utils';
+import { createCopyButton, parseMarkdown, replaceIdReferences } from './utils';
 
 /**
  * Render the sources list for a single answer.
@@ -38,6 +38,15 @@ function renderSources( sources ) {
 	html += '</ol></div>';
 	return html;
 }
+
+/**
+ * Labels for the per-answer copy button, in each of its three states.
+ */
+const COPY_LABELS = {
+	idle: __( 'Copy answer', 'hamelp' ),
+	copied: __( 'Copied!', 'hamelp' ),
+	failed: __( 'Failed to copy.', 'hamelp' ),
+};
 
 document.querySelectorAll( '.hamelp-ai-overview' ).forEach( ( container ) => {
 	const form = container.querySelector( 'form' );
@@ -157,6 +166,7 @@ document.querySelectorAll( '.hamelp-ai-overview' ).forEach( ( container ) => {
 				html += renderSources( data.sources );
 			}
 			answerEl.innerHTML = html;
+			turn.appendChild( createCopyButton( answerEl, COPY_LABELS ) );
 			turn.classList.remove( 'is-loading' );
 			turn.classList.add( 'has-result' );
 
