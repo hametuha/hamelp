@@ -9,16 +9,13 @@
 	"textdomain": "hamelp",
 	"attributes": {
 		"placeholder": {
-			"type": "string",
-			"default": "Enter your question..."
+			"type": "string"
 		},
 		"buttonText": {
-			"type": "string",
-			"default": "Ask AI"
+			"type": "string"
 		},
 		"hintText": {
-			"type": "string",
-			"default": "Shift + Enter で改行"
+			"type": "string"
 		},
 		"showSources": {
 			"type": "boolean",

@@ -297,7 +297,7 @@ function hamelp_render_search_box( $args = [] ) {
  *
  *     @type string $placeholder   Input placeholder text. Default 'Enter your question...'.
  *     @type string $button_text   Submit button text. Default 'Ask AI'.
- *     @type string $hint_text     Helper text shown below the input (empty = hidden). Default 'Shift + Enter で改行'.
+ *     @type string $hint_text     Helper text shown below the input (empty = hidden). Default 'Shift + Enter for a line break'.
  *     @type bool   $show_sources  Whether to show source FAQ links. Default true.
  *     @type string $wrapper_attrs Pre-built wrapper attributes string (used internally by block render).
  * }
@@ -314,7 +314,7 @@ function hamelp_render_ai_overview( $args = [] ) {
 		[
 			'placeholder'   => __( 'Enter your question...', 'hamelp' ),
 			'button_text'   => __( 'Ask AI', 'hamelp' ),
-			'hint_text'     => __( 'Shift + Enter で改行', 'hamelp' ),
+			'hint_text'     => __( 'Shift + Enter for a line break', 'hamelp' ),
 			'show_sources'  => true,
 			'wrapper_attrs' => '',
 		]
@@ -354,7 +354,7 @@ function hamelp_render_ai_overview( $args = [] ) {
 		);
 	}
 
-	// Optional helper text below the field (e.g. "Shift + Enter で改行"). When set,
+	// Optional helper text below the field (e.g. "Shift + Enter for a line break"). When set,
 	// it is associated with the textarea via aria-describedby; empty = not rendered.
 	$hint_text = trim( (string) $args['hint_text'] );
 	$hint_html = '';
