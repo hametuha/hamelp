@@ -19,38 +19,50 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 export default function Edit( { attributes, setAttributes } ) {
 	const { placeholder, buttonText, hintText, showSources } = attributes;
 
+	// block.json intentionally declares no defaults for these strings: a declared
+	// default is served verbatim in every locale, so the translated fallbacks below
+	// (and their PHP counterparts in render.php) are used instead. See #141.
+	// The three dots must stay ASCII: this string shares its msgid with the PHP
+	// fallback in render.php, so switching to an ellipsis character here would
+	// orphan the existing translations.
+	// eslint-disable-next-line @wordpress/i18n-ellipsis
+	const defaultPlaceholder = __( 'Enter your question...', 'hamelp' );
+	const placeholderText = placeholder ?? defaultPlaceholder;
+	const submitLabel = buttonText ?? __( 'Ask AI', 'hamelp' );
+	const hint = hintText ?? __( 'Shift + Enter for a line break', 'hamelp' );
+
 	return (
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Settings', 'hamelp' ) }>
 					<TextControl
 						label={ __( 'Placeholder', 'hamelp' ) }
-						value={ placeholder }
+						value={ placeholderText }
 						onChange={ ( value ) =>
 							setAttributes( { placeholder: value } )
 						}
 					/>
 					<TextControl
 						label={ __(
-							'送信ボタンのラベル（スクリーンリーダー用）',
+							'Submit button label (for screen readers)',
 							'hamelp'
 						) }
 						help={ __(
-							'フロントエンドには↑アイコンのみ表示され、この文言はスクリーンリーダーの読み上げ用ラベルとして使われます。',
+							'The front end shows only the arrow icon. This text is used as the screen reader label.',
 							'hamelp'
 						) }
-						value={ buttonText }
+						value={ submitLabel }
 						onChange={ ( value ) =>
 							setAttributes( { buttonText: value } )
 						}
 					/>
 					<TextControl
-						label={ __( '入力欄下の補助テキスト', 'hamelp' ) }
+						label={ __( 'Helper text below the input', 'hamelp' ) }
 						help={ __(
-							'Shift+Enterで改行できることの案内などに。空にすると非表示。スマートフォン等のタッチ端末では自動的に非表示になります。',
+							'Use this to note that Shift + Enter inserts a line break. Leave it empty to hide the text. It is hidden automatically on touch devices such as smartphones.',
 							'hamelp'
 						) }
-						value={ hintText }
+						value={ hint }
 						onChange={ ( value ) =>
 							setAttributes( { hintText: value } )
 						}
@@ -66,7 +78,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			<div { ...useBlockProps( { className: 'hamelp-ai-overview' } ) }>
 				<div className="hamelp-ai-overview__preview">
-					<textarea placeholder={ placeholder } disabled />
+					<textarea placeholder={ placeholderText } disabled />
 					<button className="hamelp-ai-overview__button" disabled>
 						<svg
 							className="hamelp-ai-overview__button-icon"
@@ -87,13 +99,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</svg>
 						<span className="screen-reader-text">
-							{ buttonText }
+							{ submitLabel }
 						</span>
 					</button>
 				</div>
-				{ hintText && (
-					<p className="hamelp-ai-overview__hint">{ hintText }</p>
-				) }
+				{ hint && <p className="hamelp-ai-overview__hint">{ hint }</p> }
 				<p className="hamelp-ai-overview__note">
 					{ __( 'AI Overview - Preview', 'hamelp' ) }
 				</p>

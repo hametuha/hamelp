@@ -23,7 +23,7 @@ echo hamelp_render_ai_overview( // phpcs:ignore WordPress.Security.EscapeOutput.
 	[
 		'placeholder'   => $attributes['placeholder'] ?? __( 'Enter your question...', 'hamelp' ),
 		'button_text'   => $attributes['buttonText'] ?? __( 'Ask AI', 'hamelp' ),
-		'hint_text'     => $attributes['hintText'] ?? __( 'Shift + Enter で改行', 'hamelp' ),
+		'hint_text'     => $attributes['hintText'] ?? __( 'Shift + Enter for a line break', 'hamelp' ),
 		'show_sources'  => ! empty( $attributes['showSources'] ),
 		'wrapper_attrs' => $wrapper_attributes,
 	]

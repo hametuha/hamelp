@@ -19,20 +19,24 @@ import { PanelBody, TextControl } from '@wordpress/components';
 export default function Edit( { attributes, setAttributes } ) {
 	const { label, btn } = attributes;
 
+	// See #141: block.json declares no defaults so these translated ones apply.
+	const labelText = label ?? __( 'Enter keyword and hit search.', 'hamelp' );
+	const btnText = btn ?? __( 'Search', 'hamelp' );
+
 	return (
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Settings', 'hamelp' ) }>
 					<TextControl
 						label={ __( 'Label', 'hamelp' ) }
-						value={ label }
+						value={ labelText }
 						onChange={ ( value ) =>
 							setAttributes( { label: value } )
 						}
 					/>
 					<TextControl
 						label={ __( 'Button Text', 'hamelp' ) }
-						value={ btn }
+						value={ btnText }
 						onChange={ ( value ) =>
 							setAttributes( { btn: value } )
 						}
@@ -44,7 +48,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<input
 						type="search"
 						className="form-control"
-						placeholder={ label }
+						placeholder={ labelText }
 						disabled
 					/>
 					<button
@@ -52,7 +56,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						className="btn btn-secondary"
 						disabled
 					>
-						{ btn }
+						{ btnText }
 					</button>
 				</div>
 			</div>

@@ -9,12 +9,10 @@
 	"textdomain": "hamelp",
 	"attributes": {
 		"label": {
-			"type": "string",
-			"default": "Enter keyword and hit search."
+			"type": "string"
 		},
 		"btn": {
-			"type": "string",
-			"default": "Search"
+			"type": "string"
 		}
 	},
 	"supports": {
