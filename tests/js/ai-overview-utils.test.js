@@ -2,7 +2,12 @@
  * Tests for AI Overview utility functions.
  */
 
-import { parseMarkdown, replaceIdReferences } from '../../src/blocks/ai-overview/utils';
+import {
+	copyToClipboard,
+	createCopyButton,
+	parseMarkdown,
+	replaceIdReferences,
+} from '../../src/blocks/ai-overview/utils';
 
 describe( 'parseMarkdown', () => {
 	it( 'returns empty string for falsy input', () => {
@@ -168,5 +173,118 @@ describe( 'replaceIdReferences', () => {
 	it( 'falls back to the default label when refLabel is empty', () => {
 		const result = replaceIdReferences( 'See [ID:100].', sources, '' );
 		expect( result ).toContain( '(Ref. 1)' );
+	} );
+} );
+
+describe( 'copyToClipboard', () => {
+	afterEach( () => {
+		jest.restoreAllMocks();
+		delete navigator.clipboard;
+		delete document.execCommand;
+	} );
+
+	it( 'returns false for empty text', async () => {
+		await expect( copyToClipboard( '' ) ).resolves.toBe( false );
+	} );
+
+	it( 'uses the async clipboard API when available', async () => {
+		const writeText = jest.fn().mockResolvedValue( undefined );
+		navigator.clipboard = { writeText };
+
+		await expect( copyToClipboard( 'hello' ) ).resolves.toBe( true );
+		expect( writeText ).toHaveBeenCalledWith( 'hello' );
+	} );
+
+	it( 'falls back to execCommand when the clipboard API rejects', async () => {
+		navigator.clipboard = {
+			writeText: jest.fn().mockRejectedValue( new Error( 'denied' ) ),
+		};
+		document.execCommand = jest.fn().mockReturnValue( true );
+
+		await expect( copyToClipboard( 'hello' ) ).resolves.toBe( true );
+		expect( document.execCommand ).toHaveBeenCalledWith( 'copy' );
+	} );
+
+	it( 'falls back to execCommand outside secure contexts', async () => {
+		document.execCommand = jest.fn().mockReturnValue( true );
+
+		await expect( copyToClipboard( 'hello' ) ).resolves.toBe( true );
+		expect( document.execCommand ).toHaveBeenCalledWith( 'copy' );
+	} );
+
+	it( 'reports failure and removes the helper field when execCommand throws', async () => {
+		document.execCommand = jest.fn( () => {
+			throw new Error( 'nope' );
+		} );
+
+		await expect( copyToClipboard( 'hello' ) ).resolves.toBe( false );
+		expect( document.querySelector( 'textarea' ) ).toBeNull();
+	} );
+} );
+
+describe( 'createCopyButton', () => {
+	const LABELS = {
+		idle: 'Copy answer',
+		copied: 'Copied!',
+		failed: 'Failed to copy.',
+	};
+	let answerEl;
+	let writeText;
+
+	beforeEach( () => {
+		jest.useFakeTimers();
+		answerEl = document.createElement( 'div' );
+		answerEl.innerHTML = '<p>The answer.</p>';
+		document.body.appendChild( answerEl );
+		writeText = jest.fn().mockResolvedValue( undefined );
+		navigator.clipboard = { writeText };
+	} );
+
+	afterEach( () => {
+		jest.useRealTimers();
+		document.body.innerHTML = '';
+		delete navigator.clipboard;
+	} );
+
+	it( 'renders a non-submitting button inside the actions wrapper', () => {
+		const actions = createCopyButton( answerEl, LABELS );
+		const button = actions.querySelector( 'button' );
+
+		expect( actions.className ).toBe( 'hamelp-ai-overview__actions' );
+		expect( button.className ).toBe( 'hamelp-ai-overview__copy' );
+		// The button lives inside the block's <form>, so it must not submit it.
+		expect( button.type ).toBe( 'button' );
+		expect( button.textContent ).toBe( 'Copy answer' );
+	} );
+
+	it( 'copies the answer text and shows feedback that reverts', async () => {
+		const button = createCopyButton( answerEl, LABELS ).querySelector( 'button' );
+
+		button.click();
+		await Promise.resolve();
+		await Promise.resolve();
+
+		expect( writeText ).toHaveBeenCalledWith( 'The answer.' );
+		expect( button.textContent ).toBe( 'Copied!' );
+		expect( button.classList.contains( 'is-copied' ) ).toBe( true );
+
+		jest.runAllTimers();
+		expect( button.textContent ).toBe( 'Copy answer' );
+		expect( button.classList.contains( 'is-copied' ) ).toBe( false );
+	} );
+
+	it( 'reports a failed copy instead of claiming success', async () => {
+		writeText.mockRejectedValue( new Error( 'denied' ) );
+		document.execCommand = jest.fn().mockReturnValue( false );
+		const button = createCopyButton( answerEl, LABELS ).querySelector( 'button' );
+
+		button.click();
+		await Promise.resolve();
+		await Promise.resolve();
+		await Promise.resolve();
+
+		expect( button.textContent ).toBe( 'Failed to copy.' );
+		expect( button.classList.contains( 'is-copied' ) ).toBe( false );
+		delete document.execCommand;
 	} );
 } );
