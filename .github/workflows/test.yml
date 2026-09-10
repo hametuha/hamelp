@@ -21,6 +21,10 @@ jobs:
     with:
       php_version: ${{ matrix.php }}
       wp_version: ${{ matrix.wp }}
+      # Blocks are registered from the gitignored assets/blocks, so without a
+      # build no block is registered and anything touching the registry or
+      # do_blocks() cannot be tested. Same command bin/build.sh uses at release.
+      package: 'package'
 
   phpcs:
     name: PHP Syntax Check
